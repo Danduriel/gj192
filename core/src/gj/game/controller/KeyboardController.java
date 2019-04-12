@@ -1,9 +1,9 @@
 package gj.game.controller;
 
 
-        import com.badlogic.gdx.Input.Keys;
-        import com.badlogic.gdx.InputProcessor;
-        import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
 
 public class KeyboardController implements  InputProcessor{
 

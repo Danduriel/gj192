@@ -32,7 +32,7 @@ public class Orchestrator extends Game {
 	public void create () {
 		loadingScreen = new LoadingScreen(this);
 		preferences = new AppPreferences();
-		setScreen(menuScreen);
+		setScreen(loadingScreen);
 
 		// tells our asset manger that we want to load the images set in loadImages method
 		assMan.queueAddMusic();

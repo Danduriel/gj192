@@ -21,6 +21,9 @@ public class LoadingScreen implements Screen {
     @Override
     public void render(float delta) {
         // TODO Auto-generated method stub
+        parent.assMan.queueAddImages();
+        parent.assMan.manager.finishLoading();
+
         parent.changeScreen(Orchestrator.MENU);
     }
 

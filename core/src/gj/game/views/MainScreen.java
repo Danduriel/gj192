@@ -2,8 +2,10 @@ package gj.game.views;
 
 
 import gj.game.Orchestrator;
+import gj.game.Utils;
 import gj.game.LevelFactory;
 import gj.game.controller.KeyboardController;
+import gj.game.entities.components.PlayerComponent;
 import gj.game.entities.systems.AnimationSystem;
 import gj.game.entities.systems.CollisionSystem;
 import gj.game.entities.systems.LevelGenerationSystem;
@@ -11,6 +13,9 @@ import gj.game.entities.systems.PhysicsDebugSystem;
 import gj.game.entities.systems.PhysicsSystem;
 import gj.game.entities.systems.PlayerControlSystem;
 import gj.game.entities.systems.RenderingSystem;
+import gj.game.entities.systems.FloorSystem;
+
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -19,7 +24,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MainScreen implements Screen{
     private Orchestrator parent;
@@ -32,6 +37,7 @@ public class MainScreen implements Screen{
     private Sound ping;
     private Sound boing;
     private TextureAtlas atlas;
+    private Entity player;
 
 
     public MainScreen(Orchestrator Orchestrator) {
@@ -57,12 +63,26 @@ public class MainScreen implements Screen{
         engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem());
         engine.addSystem(new PlayerControlSystem(controller));
-
-
+        player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
+        engine.addSystem(new WallSystem(player));
+        engine.addSystem(new FloorSystem(player));
         engine.addSystem(new LevelGenerationSystem(lvlFactory));
 
-        lvlFactory.createPlayer(atlas.findRegion("player"),cam);
-        lvlFactory.createFloor(atlas.findRegion("player"));
+        int floorWidth = (int) (40*RenderingSystem.PPM);
+        int floorHeight = (int) (1*RenderingSystem.PPM);
+        TextureRegion floorRegion = Utils.makeTextureRegion(floorWidth, floorHeight, "11331180");
+        lvlFactory.createFloor(floorRegion);
+
+        int wFloorWidth = (int) (40*RenderingSystem.PPM);
+        int wFloorHeight = (int) (10*RenderingSystem.PPM);
+        TextureRegion wFloorRegion = Utils.makeTextureRegion(wFloorWidth, wFloorHeight, "11113380");
+        lvlFactory.createHandFloor(wFloorRegion); // Hand coming to kill you from below
+
+
+        int wallWidth = (int) (1*RenderingSystem.PPM);
+        int wallHeight = (int) (60*RenderingSystem.PPM);
+        TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
+        lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
     }
 
 

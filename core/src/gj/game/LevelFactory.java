@@ -1,12 +1,6 @@
 package gj.game;
 
-import gj.game.entities.components.B2dBodyComponent;
-import gj.game.entities.components.CollisionComponent;
-import gj.game.entities.components.PlayerComponent;
-import gj.game.entities.components.StateComponent;
-import gj.game.entities.components.TextureComponent;
-import gj.game.entities.components.TransformComponent;
-import gj.game.entities.components.TypeComponent;
+import gj.game.entities.components.*;
 import gj.game.simplexnoise.SimplexNoise;
 
 import com.badlogic.ashley.core.Entity;
@@ -42,15 +36,27 @@ public class LevelFactory {
     public void generateLevel(int ylevel){
         while(ylevel > currentLevel){
             // get noise      sim.getNoise(xpos,ypos,zpos) 3D noise
-            float noise1 = (float)sim.getNoise(1, currentLevel, 0);
-            float noise2 = (float)sim.getNoise(1, currentLevel, 100);
-            float noise3 = (float)sim.getNoise(1, currentLevel, 200);
-            float noise4 = (float)sim.getNoise(1, currentLevel, 300);
+            float noise1 = (float)sim.getNoise(1, currentLevel, 0);		// platform 1 should exist?
+            float noise2 = (float)sim.getNoise(1, currentLevel, 100);	// if plat 1 exists where on x axis
+            float noise3 = (float)sim.getNoise(1, currentLevel, 200);	// platform 2 exists?
+            float noise4 = (float)sim.getNoise(1, currentLevel, 300);	// if 2 exists where on x axis ?
+            float noise5 = (float)sim.getNoise(1, currentLevel ,1400);	// should spring exist on p1?
+            float noise6 = (float)sim.getNoise(1, currentLevel ,2500);	// should spring exists on p2?
+            float noise7 = (float)sim.getNoise(1, currentLevel, 2700);	// should enemy exist?
+            float noise8 = (float)sim.getNoise(1, currentLevel, 3000);	// platform 1 or 2?
             if(noise1 > 0.2f){
                 createPlatform(noise2 * 25 +2 ,currentLevel * 2);
+                if(noise5 > 0.5f){
+                    // add bouncy platform
+                    createBouncyPlatform(noise2 * 25 +2,currentLevel * 2);
+                }
             }
             if(noise3 > 0.2f){
                 createPlatform(noise4 * 25 +2, currentLevel * 2);
+                if(noise6 > 0.4f){
+                    // add bouncy platform
+                    createBouncyPlatform(noise4 * 25 +2,currentLevel * 2);
+                }
             }
             currentLevel++;
         }
@@ -70,6 +76,30 @@ public class LevelFactory {
         entity.add(type);
         engine.addEntity(entity);
 
+    }
+
+    public Entity createBouncyPlatform(float x, float y){
+        Entity entity = engine.createEntity();
+        // create body component
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, .5f, 0.5f, gjBodyFactory.STONE, BodyType.StaticBody);
+        //make it a sensor so not to impede movement
+        bodyFactory.makeAllFixturesSensors(b2dbody.body);
+
+        // give it a texture..todo get another texture and anim for springy action
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        texture.region = floorTex;
+
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        type.type = TypeComponent.SPRING;
+
+        b2dbody.body.setUserData(entity);
+        entity.add(b2dbody);
+        entity.add(texture);
+        entity.add(type);
+        engine.addEntity(entity);
+
+        return entity;
     }
 
     public void createFloor(TextureRegion tex){
@@ -121,5 +151,66 @@ public class LevelFactory {
 
         engine.addEntity(entity);
 
+    }
+
+
+    public void createWalls(TextureRegion tex){
+
+        for(int i = 0; i < 2; i++){
+            System.out.println("Making wall "+i);
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            TransformComponent position = engine.createComponent(TransformComponent.class);
+            TextureComponent texture = engine.createComponent(TextureComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+            WallComponent wallComp = engine.createComponent(WallComponent.class);
+
+            //make wall
+            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*40),30,1,60, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+            position.position.set(0+(i*40), 30, 0);
+            texture.region = tex;
+            type.type = TypeComponent.SCENERY;
+
+            entity.add(b2dbody);
+            entity.add(position);
+            entity.add(texture);
+            entity.add(type);
+            entity.add(wallComp);
+            b2dbody.body.setUserData(entity);
+
+            engine.addEntity(entity);
+        }
+    }
+
+
+
+
+    /**
+     * Creates the Hand entity that steadily moves upwards towards player
+     * @return
+     */
+    public Entity createHandFloor(TextureRegion tex){
+        Entity entity = engine.createEntity();
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        TransformComponent position = engine.createComponent(TransformComponent.class);
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        FloorComponent waterFloor = engine.createComponent(FloorComponent.class);
+
+        type.type = TypeComponent.ENEMY;
+        texture.region = tex;
+        b2dbody.body = bodyFactory.makeBoxPolyBody(20,-15,40,10, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+        position.position.set(20,-15,0);
+        entity.add(b2dbody);
+        entity.add(position);
+        entity.add(texture);
+        entity.add(type);
+        entity.add(waterFloor);
+
+        b2dbody.body.setUserData(entity);
+
+        engine.addEntity(entity);
+
+        return entity;
     }
 }

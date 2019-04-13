@@ -31,6 +31,9 @@ public class PlayerControlSystem extends IteratingSystem{
     protected void processEntity(Entity entity, float deltaTime) {
         B2dBodyComponent b2body = bodm.get(entity);
         StateComponent state = sm.get(entity);
+        PlayerComponent player = pm.get(entity);
+        player.cam.position.y = b2body.body.getPosition().y;
+
 
         if(b2body.body.getLinearVelocity().y > 0){
             state.set(StateComponent.STATE_FALLING);
@@ -45,11 +48,27 @@ public class PlayerControlSystem extends IteratingSystem{
             }
         }
 
+        if(b2body.body.getLinearVelocity().y < 0 && state.get() == StateComponent.STATE_FALLING){
+            // player is actually falling. check if they are on platform
+            if(player.onPlatform){
+                //overwrite old y value with 0 t stop falling but keep x vel
+                b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0f);
+            }
+        }
+
+        // make player jump very high
+        if(player.onSpring){
+            b2body.body.applyLinearImpulse(0, 175f, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
+            state.set(StateComponent.STATE_JUMPING);
+            player.onSpring = false;
+        }
+
+
         if(controller.left){
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -5f, 0.2f),b2body.body.getLinearVelocity().y);
+            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, -7f, 0.2f),b2body.body.getLinearVelocity().y);
         }
         if(controller.right){
-            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 5f, 0.2f),b2body.body.getLinearVelocity().y);
+            b2body.body.setLinearVelocity(MathUtils.lerp(b2body.body.getLinearVelocity().x, 7f, 0.2f),b2body.body.getLinearVelocity().y);
         }
 
         if(!controller.left && ! controller.right){
@@ -58,7 +77,6 @@ public class PlayerControlSystem extends IteratingSystem{
 
         if(controller.up &&
                 (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
-            //b2body.body.applyForceToCenter(0, 3000,true);
             b2body.body.applyLinearImpulse(0, 75f, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             state.set(StateComponent.STATE_JUMPING);
         }

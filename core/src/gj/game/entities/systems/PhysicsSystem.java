@@ -4,6 +4,7 @@ import gj.game.entities.components.B2dBodyComponent;
 import gj.game.entities.components.TransformComponent;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -19,15 +20,17 @@ public class PhysicsSystem extends IteratingSystem {
     private static float accumulator = 0f;
 
     private World world;
+    private Engine engine;
     private Array<Entity> bodiesQueue;
 
     private ComponentMapper<B2dBodyComponent> bm = ComponentMapper.getFor(B2dBodyComponent.class);
     private ComponentMapper<TransformComponent> tm = ComponentMapper.getFor(TransformComponent.class);
 
     @SuppressWarnings("unchecked")
-    public PhysicsSystem(World world) {
+    public PhysicsSystem(World world, Engine eng) {
         super(Family.all(B2dBodyComponent.class, TransformComponent.class).get());
         this.world = world;
+        this.engine = eng;
         this.bodiesQueue = new Array<Entity>();
     }
 
@@ -48,6 +51,7 @@ public class PhysicsSystem extends IteratingSystem {
                 tfm.position.x = position.x;
                 tfm.position.y = position.y;
                 tfm.rotation = bodyComp.body.getAngle() * MathUtils.radiansToDegrees;
+                //TODO check this works
                 if(bodyComp.isDead){
                     System.out.println("Removing a body and entity");
                     world.destroyBody(bodyComp.body);

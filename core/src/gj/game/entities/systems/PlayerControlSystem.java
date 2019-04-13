@@ -1,6 +1,6 @@
 package gj.game.entities.systems;
 
-import com.badlogic.gdx.math.Vector3;
+import gj.game.LevelFactory;
 import gj.game.controller.KeyboardController;
 import gj.game.entities.components.B2dBodyComponent;
 import gj.game.entities.components.PlayerComponent;
@@ -11,9 +11,11 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 
 public class PlayerControlSystem extends IteratingSystem{
 
+    private LevelFactory lvlFactory;
     ComponentMapper<PlayerComponent> pm;
     ComponentMapper<B2dBodyComponent> bodm;
     ComponentMapper<StateComponent> sm;
@@ -21,9 +23,10 @@ public class PlayerControlSystem extends IteratingSystem{
 
 
     @SuppressWarnings("unchecked")
-    public PlayerControlSystem(KeyboardController keyCon) {
+    public PlayerControlSystem(KeyboardController keyCon, LevelFactory lvlf) {
         super(Family.all(PlayerComponent.class).get());
         controller = keyCon;
+        lvlFactory = lvlf;
         pm = ComponentMapper.getFor(PlayerComponent.class);
         bodm = ComponentMapper.getFor(B2dBodyComponent.class);
         sm = ComponentMapper.getFor(StateComponent.class);
@@ -80,10 +83,16 @@ public class PlayerControlSystem extends IteratingSystem{
                 (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
             b2body.body.applyLinearImpulse(0, 75f, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             state.set(StateComponent.STATE_JUMPING);
+            player.onPlatform = false;
+            player.onSpring = false;
         }
 
+        if(player.timeSinceLastShot > 0){
+            player.timeSinceLastShot -= deltaTime;
+        }
 
         if(controller.isMouse1Down){ // if mouse button is pressed
+            //System.out.println(player.timeSinceLastShot+" ls:sd "+player.shootDelay);
             // user wants to fire
             if(player.timeSinceLastShot <=0){ // check the player hasn't just shot
                 //player can shoot so do player shoot

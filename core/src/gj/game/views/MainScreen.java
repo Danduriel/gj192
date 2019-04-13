@@ -28,7 +28,7 @@ public class MainScreen implements Screen{
 
     public MainScreen(Orchestrator Orchestrator) {
         parent = Orchestrator;
-        cam = new OrthographicCamera(32,24);
+        cam = new OrthographicCamera(64,48);
         controller = new KeyboardController();
         gjModel = new gjModel(controller,cam,parent.assMan);
         debugRenderer = new Box2DDebugRenderer(true,true,true,true,true,true);

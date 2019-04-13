@@ -37,5 +37,10 @@ public class EnemySystem extends IteratingSystem{
         bodyCom.body.setTransform(bodyCom.body.getPosition().x + speed,
                 bodyCom.body.getPosition().y,
                 bodyCom.body.getAngle());
+
+        // check for dead enemies
+        if(enemyCom.isDead){
+            bodyCom.isDead =true;
+        }
     }
 }

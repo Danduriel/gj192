@@ -1,7 +1,9 @@
 package gj.game.entities.systems;
 
+import gj.game.entities.components.BulletComponent;
 import gj.game.entities.components.CollisionComponent;
 import gj.game.entities.components.EnemyComponent;
+import gj.game.entities.components.Mapper;
 import gj.game.entities.components.PlayerComponent;
 import gj.game.entities.components.TypeComponent;
 
@@ -67,7 +69,7 @@ public class CollisionSystem  extends IteratingSystem {
                     }
                     cc.collisionEntity = null; // collision handled reset component
                 }else{
-                    System.out.println("type == null");
+                    System.out.println("Player: collidedEntity.type == null");
                 }
             }
         }else if(thisType.type == TypeComponent.ENEMY){  	// Do enemy collisions
@@ -93,15 +95,20 @@ public class CollisionSystem  extends IteratingSystem {
                         case TypeComponent.BULLET:
                             EnemyComponent enemy = Mapper.enemyCom.get(entity);
                             enemy.isDead = true;
+                            BulletComponent bullet = Mapper.bulletCom.get(collidedEntity);
+                            bullet.isDead = true;
                             System.out.println("enemy got shot");
+                            break;
                         default:
                             System.out.println("No matching type found");
                     }
                     cc.collisionEntity = null; // collision handled reset component
                 }else{
-                    System.out.println("type == null");
+                    System.out.println("Enemy: collidedEntity.type == null");
                 }
             }
+        }else{
+            cc.collisionEntity = null;
         }
     }
 }

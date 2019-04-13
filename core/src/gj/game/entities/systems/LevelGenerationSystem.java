@@ -3,11 +3,9 @@ package gj.game.entities.systems;
 import gj.game.LevelFactory;
 import gj.game.entities.components.PlayerComponent;
 import gj.game.entities.components.TransformComponent;
-
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 public class LevelGenerationSystem extends IteratingSystem {

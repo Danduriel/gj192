@@ -1,6 +1,5 @@
 package gj.game.entities.systems;
 
-
 import gj.game.entities.components.B2dBodyComponent;
 import gj.game.entities.components.BulletComponent;
 import gj.game.entities.components.Mapper;

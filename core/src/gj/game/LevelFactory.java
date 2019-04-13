@@ -1,9 +1,11 @@
 package gj.game;
 
 
+
 import gj.game.entities.components.*;
 import gj.game.entities.systems.RenderingSystem;
 import gj.game.simplexnoise.SimplexNoise;
+import gj.game.simplexnoise.OpenSimplexNoise;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
@@ -13,9 +15,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.MathUtils;
 
 public class LevelFactory {
-    private BodyFactory bodyFactory;
+    private gjBodyFactory bodyFactory;
     public World world;
     private PooledEngine engine;
     private SimplexNoise sim; // a semi-smoothe noise for generating level parts
@@ -38,12 +42,12 @@ public class LevelFactory {
         enemyTex = atlas.findRegion("waterdrop");
 
         waterTex  = atlas.findRegion("water");
-        bulletTex = DFUtils.makeTextureRegion(10,10,"444444FF");
+        bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
         //platformTex = DFUtils.makeTextureRegion(2*RenderingSystem.PPM, 0.1f*RenderingSystem.PPM, "221122FF");
         platformTex = atlas.findRegion("platform");
         world = new World(new Vector2(0,-10f), true);
-        world.setContactListener(new B2dContactListener());
-        bodyFactory = BodyFactory.getInstance(world);
+        world.setContactListener(new gjContactListener());
+        bodyFactory = gjBodyFactory.getInstance(world);
 
         // create a new SimplexNoise (size,roughness,seed)
         //sim = new SimplexNoise(1024, 1f, MathUtils.random(3));
@@ -94,7 +98,7 @@ public class LevelFactory {
     public void createPlatform(float x, float y){
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 3f, 0.3f, BodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 3f, 0.3f, gjBodyFactory.STONE, BodyType.StaticBody);
         b2dbody.body.setUserData(entity);
         entity.add(b2dbody);
 
@@ -118,7 +122,7 @@ public class LevelFactory {
         Entity entity = engine.createEntity();
         // create body component
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 1f, 1f, BodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 1f, 1f, gjBodyFactory.STONE, BodyType.StaticBody);
         //make it a sensor so not to impede movement
         bodyFactory.makeAllFixturesSensors(b2dbody.body);
 
@@ -152,7 +156,7 @@ public class LevelFactory {
         position.position.set(20,0,0);
         texture.region = floorTex;
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 46, 32, BodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 46, 32, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -172,7 +176,7 @@ public class LevelFactory {
         TypeComponent type = engine.createComponent(TypeComponent.class);
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
 
-        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, BodyFactory.STONE, BodyType.KinematicBody,true);
+        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, gjBodyFactory.STONE, BodyType.KinematicBody,true);
         position.position.set(x,y,0);
         texture.region = tex;
         enemy.xPosCenter = x;
@@ -205,7 +209,7 @@ public class LevelFactory {
 
 
         player.cam = cam;
-        b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, BodyFactory.STONE, BodyType.DynamicBody,true);
+        b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         // set object position (x,y,z) z used to define draw order 0 first drawn
         Animation anim = new Animation(0.1f,atlas.findRegions("flame_a"));
         //anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -246,7 +250,7 @@ public class LevelFactory {
             WallComponent wallComp = engine.createComponent(WallComponent.class);
 
             //make wall
-            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*40),30,1,60, BodyFactory.STONE, BodyType.KinematicBody,true);
+            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*40),30,1,60, gjBodyFactory.STONE, BodyType.KinematicBody,true);
             position.position.set(0+(i*40), 30, 0);
             texture.region = tex;
             type.type = TypeComponent.SCENERY;
@@ -273,11 +277,11 @@ public class LevelFactory {
         TransformComponent position = engine.createComponent(TransformComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
-        WaterFloorComponent waterFloor = engine.createComponent(WaterFloorComponent.class);
+        FloorComponent waterFloor = engine.createComponent(FloorComponent.class);
 
         type.type = TypeComponent.ENEMY;
         texture.region = waterTex;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(20,-40,40,44, BodyFactory.STONE, BodyType.KinematicBody,true);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(20,-40,40,44, gjBodyFactory.STONE, BodyType.KinematicBody,true);
         position.position.set(20,-15,0);
         entity.add(b2dbody);
         entity.add(position);
@@ -304,12 +308,12 @@ public class LevelFactory {
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
         BulletComponent bul = engine.createComponent(BulletComponent.class);
 
-        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,0.5f, BodyFactory.STONE, BodyType.DynamicBody,true);
+        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,0.5f, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         b2dbody.body.setBullet(true); // increase physics computation to limit body travelling through other objects
         bodyFactory.makeAllFixturesSensors(b2dbody.body); // make bullets sensors so they don't move player
         position.position.set(x,y,0);
         texture.region = bulletTex;
-        Animation anim = new Animation(0.05f,DFUtils.spriteSheetToFrames(atlas.findRegion("FlameSpriteAnimation"), 7, 1));
+        Animation anim = new Animation(0.05f,Utils.spriteSheetToFrames(atlas.findRegion("FlameSpriteAnimation"), 7, 1));
         anim.setPlayMode(Animation.PlayMode.LOOP);
         animCom.animations.put(0, anim);
 

@@ -23,6 +23,8 @@ public class Orchestrator extends Game {
 	public gjAssetManager assMan = new gjAssetManager();
 	private Music playingSong;
 
+	public int lastScore = 0;
+
 	public final static int MENU = 0;
 	public final static int PREFERENCES = 1;
 	public final static int APPLICATION = 2;

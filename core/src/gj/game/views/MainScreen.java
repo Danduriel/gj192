@@ -62,7 +62,7 @@ public class MainScreen implements Screen {
         engine.addSystem(new EnemySystem());
         player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
         engine.addSystem(new WallSystem(player));
-        engine.addSystem(new WaterFloorSystem(player));
+        engine.addSystem(new FloorSystem(player));
         engine.addSystem(new BulletSystem(player));
         engine.addSystem(new LevelGenerationSystem(lvlFactory));
 
@@ -72,7 +72,7 @@ public class MainScreen implements Screen {
 
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
-        TextureRegion wallRegion = DFUtils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
+        TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
         lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
     }
 

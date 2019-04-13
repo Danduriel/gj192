@@ -62,24 +62,17 @@ public class MainScreen implements Screen {
         engine.addSystem(new EnemySystem());
         player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
         engine.addSystem(new WallSystem(player));
-        engine.addSystem(new FloorSystem(player));
+        engine.addSystem(new WaterFloorSystem(player));
         engine.addSystem(new BulletSystem(player));
         engine.addSystem(new LevelGenerationSystem(lvlFactory));
 
-        int floorWidth = (int) (40*RenderingSystem.PPM);
-        int floorHeight = (int) (1*RenderingSystem.PPM);
-        TextureRegion floorRegion = Utils.makeTextureRegion(floorWidth, floorHeight, "11331180");
-        lvlFactory.createFloor(floorRegion);
-
-        int wFloorWidth = (int) (40*RenderingSystem.PPM);
-        int wFloorHeight = (int) (10*RenderingSystem.PPM);
-        TextureRegion wFloorRegion = Utils.makeTextureRegion(wFloorWidth, wFloorHeight, "11113380");
-        lvlFactory.createFloor(wFloorRegion);
+        lvlFactory.createFloor();
+        lvlFactory.createWaterFloor();
 
 
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
-        TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
+        TextureRegion wallRegion = DFUtils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
         lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
     }
 
@@ -97,8 +90,10 @@ public class MainScreen implements Screen {
         engine.update(delta);
 
         //check if player is dead. if so show end screen
-        if((player.getComponent(PlayerComponent.class)).isDead){
+        PlayerComponent pc = (player.getComponent(PlayerComponent.class));
+        if(pc.isDead){
             Utils.log("YOU DIED : back to menu you go!");
+            parent.lastScore = (int) pc.cam.position.y;
             parent.changeScreen(Orchestrator.ENDGAME);
         }
 

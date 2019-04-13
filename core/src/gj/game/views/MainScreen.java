@@ -14,6 +14,7 @@ import gj.game.entities.systems.PhysicsSystem;
 import gj.game.entities.systems.PlayerControlSystem;
 import gj.game.entities.systems.RenderingSystem;
 import gj.game.entities.systems.FloorSystem;
+import gj.game.entities.systems.WallSystem;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;

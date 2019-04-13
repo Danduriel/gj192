@@ -1,6 +1,14 @@
 package gj.game;
 
-import gj.game.entities.components.*;
+import gj.game.entities.components.B2dBodyComponent;
+import gj.game.entities.components.CollisionComponent;
+import gj.game.entities.components.PlayerComponent;
+import gj.game.entities.components.StateComponent;
+import gj.game.entities.components.TextureComponent;
+import gj.game.entities.components.TransformComponent;
+import gj.game.entities.components.TypeComponent;
+import gj.game.entities.components.WallComponent;
+import gj.game.entities.components.FloorComponent;
 import gj.game.simplexnoise.SimplexNoise;
 
 import com.badlogic.ashley.core.Entity;
@@ -63,9 +71,12 @@ public class LevelFactory {
     }
 
     public void createPlatform(float x, float y){
+        // TODO make sensor
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 1.5f, 0.2f, gjBodyFactory.STONE, BodyType.StaticBody);
+        // make it so
+        //bodyFactory.makeAllFixturesSensors(b2dbody.body);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         texture.region = floorTex;
         TypeComponent type = engine.createComponent(TypeComponent.class);
@@ -105,17 +116,21 @@ public class LevelFactory {
     public void createFloor(TextureRegion tex){
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        b2dbody.body = bodyFactory.makeBoxPolyBody(0, 0, 100, 0.2f, gjBodyFactory.STONE, BodyType.StaticBody);
+        TransformComponent position = engine.createComponent(TransformComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.region = tex;
         TypeComponent type = engine.createComponent(TypeComponent.class);
-        type.type = TypeComponent.SCENERY;
 
-        b2dbody.body.setUserData(entity);
+        position.position.set(20,0,0);
+        texture.region = tex;
+        type.type = TypeComponent.SCENERY;
+        b2dbody.body = bodyFactory.makeBoxPolyBody(20, 0, 40, 0.5f, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);
+        entity.add(position);
         entity.add(type);
+
+        b2dbody.body.setUserData(entity);
 
         engine.addEntity(entity);
     }
@@ -153,7 +168,6 @@ public class LevelFactory {
 
     }
 
-
     public void createWalls(TextureRegion tex){
 
         for(int i = 0; i < 2; i++){
@@ -181,8 +195,6 @@ public class LevelFactory {
             engine.addEntity(entity);
         }
     }
-
-
 
 
     /**

@@ -17,7 +17,7 @@ import java.util.Comparator;
 
 public class RenderingSystem extends SortedIteratingSystem {
 
-    static final float PPM = 32.0f; // sets the amount of pixels each metre of box2d objects contains
+    public static final float PPM = 32.0f; // sets the amount of pixels each metre of box2d objects contains
 
     // this gets the height and width of our camera frustrum based off the width and height of the screen and our pixel per meter ratio
     static final float FRUSTUM_WIDTH = Gdx.graphics.getWidth()/PPM;

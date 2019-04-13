@@ -44,7 +44,6 @@ public class MainScreen implements Screen {
         boing = parent.assMan.manager.get("sounds/boing.wav",Sound.class);
         controller = new KeyboardController();
         engine = new PooledEngine();
-        // next guide - changed this to atlas
         lvlFactory = new LevelFactory(engine,atlas);
 
 
@@ -73,7 +72,7 @@ public class MainScreen implements Screen {
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
         TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
-        lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
+        lvlFactory.createWalls(wallRegion);
     }
 
 

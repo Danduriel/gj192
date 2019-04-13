@@ -9,12 +9,11 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "Shiny Tasty Burgers";
-		config.useGL30 = false;
-		config.width = 1280;
-		config.height = 1024;
+		//config.useGL30 = false;
+		//config.width = 1280;
+		//config.height = 1024;
 
 
 		new LwjglApplication(new Orchestrator(), config);
-		//teststuff
 	}
 }

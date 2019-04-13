@@ -212,6 +212,7 @@ public class LevelFactory {
         b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         // set object position (x,y,z) z used to define draw order 0 first drawn
         Animation anim = new Animation(0.1f,atlas.findRegions("flame_a"));
+        Animation derp = new Animation()
         //anim.setPlayMode(Animation.PlayMode.LOOP);
         animCom.animations.put(StateComponent.STATE_NORMAL, anim);
         animCom.animations.put(StateComponent.STATE_MOVING, anim);

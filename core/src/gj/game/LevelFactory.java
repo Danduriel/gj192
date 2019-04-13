@@ -135,7 +135,7 @@ public class LevelFactory {
         engine.addEntity(entity);
     }
 
-    public void createPlayer(TextureRegion tex, OrthographicCamera cam){
+    public Entity createPlayer(TextureRegion tex, OrthographicCamera cam){
 
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
@@ -165,7 +165,7 @@ public class LevelFactory {
         entity.add(stateCom);
 
         engine.addEntity(entity);
-
+        return entity;
     }
 
     public void createWalls(TextureRegion tex){

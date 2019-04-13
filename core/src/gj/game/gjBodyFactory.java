@@ -18,28 +18,7 @@ public class gjBodyFactory {
     public static final int RUBBER = 2;
     public static final int STONE = 3;
 
-    /** //  **acebsp
-     public static final short CATEGORY_PLAYER 			= 0b00000001;
-     public static final short CATEGORY_SCENERY 			= 0b00000010;
-     public static final short CATEGORY_BULLET			= 0b00000100;
-     public static final short CATEGORY_ENEMY 			= 0b00001000;
-     public static final short CATEGORY_SCENERY_PASSIVE 	= 0b00010000;
-     public static final short CATEGORY_AI_PLAYER 		= 0b00100000;
 
-     //  **acebsp
-     public static final short MASK_PLAYER 				= 0b00111110;
-     public static final short MASK_SCENERY 				= 0b11111111;
-     public static final short MASK_BULLET				= 0b00101011;
-     public static final short MASK_ENEMY 				= 0b00110111;
-     public static final short MASK_SCENERY_PASSIVE 		= 0b00111011;
-     public static final short MASK_AI_PLAYER 			= 0b11111111;  // had this set to 00011110 and player, ai player did not contact with enemy
-     public static final short MASK_LIGHTS 				= 0b00000010;
-
-
-     public static short currentMask = MASK_PLAYER;
-     public static short currentCategory = CATEGORY_PLAYER;
-
-     **/
     private static gjBodyFactory thisInstance;
     private World world;
     private final float DEGTORAD = 0.0174533f;

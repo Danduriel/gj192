@@ -2,9 +2,9 @@ package gj.game.entities.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.Pool.Poolable;
 
-
-public class PlayerComponent implements Component{
+public class PlayerComponent implements Component, Poolable{
     public OrthographicCamera cam = null;
     public boolean onPlatform = false;
     public boolean onSpring = false;
@@ -12,7 +12,19 @@ public class PlayerComponent implements Component{
     public float shootDelay = 0.5f;
     public float timeSinceLastShot = 0f;
 
-    int edibility;
-    int shinyness;
-    int toxicity;
+    public int edibility;
+    public int shinyness;
+    public int toxicity;
+
+    @Override
+    public void reset() {
+        cam = null;
+        onPlatform = false;
+        onSpring = false;
+        isDead = false;
+        shootDelay = 0.5f;
+        timeSinceLastShot = 0f;
+    }
 }
+
+

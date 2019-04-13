@@ -36,12 +36,10 @@ public class Orchestrator extends Game {
 
 		// tells our asset manger that we want to load the images set in loadImages method
 		assMan.queueAddMusic();
-
 		// tells the asset manager to load the images and wait until finished loading.
 		assMan.manager.finishLoading();
-
-
-		//playingSong = assMan.manager.get("test.mp3");
+		// loads the 2 sounds we use
+		playingSong = assMan.manager.get("music/Rolemusic_-_pl4y1ng.mp3");
 
 		//playingSong.play();
 
@@ -58,7 +56,8 @@ public class Orchestrator extends Game {
 				this.setScreen(preferencesScreen);
 				break;
 			case APPLICATION:
-				if(mainScreen == null) mainScreen = new MainScreen(this);
+				// always make new game screen so game can't start midway
+				mainScreen = new MainScreen(this);
 				this.setScreen(mainScreen);
 				break;
 			case ENDGAME:

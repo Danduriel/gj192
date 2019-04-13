@@ -1,6 +1,5 @@
 package gj.game.views;
 
-
 import gj.game.Orchestrator;
 import gj.game.Utils;
 import gj.game.LevelFactory;
@@ -19,7 +18,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class MainScreen implements Screen{
+public class MainScreen implements Screen {
     private Orchestrator parent;
     private OrthographicCamera cam;
     private KeyboardController controller;
@@ -33,6 +32,9 @@ public class MainScreen implements Screen{
     private Entity player;
 
 
+    /**
+     * @param Orchestrator
+     */
     public MainScreen(Orchestrator Orchestrator) {
         parent = Orchestrator;
         parent.assMan.queueAddSounds();
@@ -42,7 +44,8 @@ public class MainScreen implements Screen{
         boing = parent.assMan.manager.get("sounds/boing.wav",Sound.class);
         controller = new KeyboardController();
         engine = new PooledEngine();
-        lvlFactory = new LevelFactory(engine,atlas.findRegion("player"));
+        // next guide - changed this to atlas
+        lvlFactory = new LevelFactory(engine,atlas);
 
 
         sb = new SpriteBatch();
@@ -60,7 +63,7 @@ public class MainScreen implements Screen{
         player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
         engine.addSystem(new WallSystem(player));
         engine.addSystem(new FloorSystem(player));
-        engine.addSystem(new BulletSystem());
+        engine.addSystem(new BulletSystem(player));
         engine.addSystem(new LevelGenerationSystem(lvlFactory));
 
         int floorWidth = (int) (40*RenderingSystem.PPM);
@@ -71,7 +74,7 @@ public class MainScreen implements Screen{
         int wFloorWidth = (int) (40*RenderingSystem.PPM);
         int wFloorHeight = (int) (10*RenderingSystem.PPM);
         TextureRegion wFloorRegion = Utils.makeTextureRegion(wFloorWidth, wFloorHeight, "11113380");
-        lvlFactory.createHandFloor(wFloorRegion); // Hand coming to kill you from below
+        lvlFactory.createFloor(wFloorRegion);
 
 
         int wallWidth = (int) (1*RenderingSystem.PPM);
@@ -92,36 +95,33 @@ public class MainScreen implements Screen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         engine.update(delta);
+
+        //check if player is dead. if so show end screen
+        if((player.getComponent(PlayerComponent.class)).isDead){
+            Utils.log("YOU DIED : back to menu you go!");
+            parent.changeScreen(Orchestrator.ENDGAME);
+        }
+
     }
 
     @Override
     public void resize(int width, int height) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-
     }
 
 }

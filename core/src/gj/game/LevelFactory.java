@@ -1,6 +1,6 @@
 package gj.game;
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+
 import gj.game.entities.components.*;
 import gj.game.entities.systems.RenderingSystem;
 import gj.game.simplexnoise.SimplexNoise;
@@ -8,6 +8,7 @@ import gj.game.simplexnoise.SimplexNoise;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -17,26 +18,29 @@ public class LevelFactory {
     private gjBodyFactory bodyFactory;
     public World world;
     private PooledEngine engine;
-    private SimplexNoise sim, simRough;
-    private TextureAtlas atlas;
+    private SimplexNoise sim; // a semi-smoothe noise for generating level parts
+    private SimplexNoise simRough; // a more rough noise for generating more randomly placed items
     public int currentLevel = 0;
     private TextureRegion floorTex;
     private TextureRegion enemyTex;
     private TextureRegion platformTex;
+    private TextureRegion bulletTex;
+    private TextureAtlas atlas;
 
-    public LevelFactory(PooledEngine en, TextureAtlas.AtlasRegion atlas){
+    public LevelFactory(PooledEngine en, TextureAtlas atlas){
         engine = en;
         this.atlas = atlas;
-        floorTex = Utils.makeTextureRegion(40* RenderingSystem.PPM, 0.5f*RenderingSystem.PPM, "111111FF");
+        floorTex = Utils.makeTextureRegion(40*RenderingSystem.PPM, 0.5f*RenderingSystem.PPM, "111111FF");
         enemyTex = Utils.makeTextureRegion(1*RenderingSystem.PPM,1*RenderingSystem.PPM, "331111FF");
+        bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
         platformTex = Utils.makeTextureRegion(2*RenderingSystem.PPM, 0.1f*RenderingSystem.PPM, "221122FF");
         world = new World(new Vector2(0,-10f), true);
         world.setContactListener(new gjContactListener());
         bodyFactory = gjBodyFactory.getInstance(world);
 
         // create a new SimplexNoise (size,roughness,seed)
-        sim = new SimplexNoise(512, 0.80f, 1);
-        simRough = new SimplexNoise(512, 0.95f, 1);
+        sim = new SimplexNoise(512, 0.90f, 1);
+        simRough = new SimplexNoise(512, 1, 1); // total randomness (very erratic placement)
 
     }
 
@@ -82,20 +86,24 @@ public class LevelFactory {
     }
 
     public void createPlatform(float x, float y){
-        // TODO make sensor
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 1.5f, 0.2f, gjBodyFactory.STONE, BodyType.StaticBody);
-        // make it so
-        //bodyFactory.makeAllFixturesSensors(b2dbody.body);
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.region = floorTex;
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-        type.type = TypeComponent.SCENERY;
+        b2dbody.body = bodyFactory.makeBoxPolyBody(x, y, 3f, 0.3f, gjBodyFactory.STONE, BodyType.StaticBody);
         b2dbody.body.setUserData(entity);
         entity.add(b2dbody);
+
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        texture.region = platformTex;
         entity.add(texture);
-        entity.add(type);
+
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        type.type = TypeComponent.SCENERY;
+
+
+        TransformComponent trans = engine.createComponent(TransformComponent.class);
+        trans.position.set(x, y, 0);
+        entity.add(trans);
+
         engine.addEntity(entity);
 
     }
@@ -110,7 +118,11 @@ public class LevelFactory {
 
         // give it a texture..todo get another texture and anim for springy action
         TextureComponent texture = engine.createComponent(TextureComponent.class);
-        texture.region = floorTex;
+        texture.region = platformTex;
+
+        TransformComponent trans = engine.createComponent(TransformComponent.class);
+        trans.position.set(x, y, 0);
+        entity.add(trans);
 
         TypeComponent type = engine.createComponent(TypeComponent.class);
         type.type = TypeComponent.SPRING;
@@ -144,6 +156,33 @@ public class LevelFactory {
         b2dbody.body.setUserData(entity);
 
         engine.addEntity(entity);
+    }
+    public Entity createEnemy(TextureRegion tex, float x, float y){
+        Entity entity = engine.createEntity();
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        TransformComponent position = engine.createComponent(TransformComponent.class);
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        EnemyComponent enemy = engine.createComponent(EnemyComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+
+        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+        position.position.set(x,y,0);
+        texture.region = tex;
+        enemy.xPosCenter = x;
+        type.type = TypeComponent.ENEMY;
+        b2dbody.body.setUserData(entity);
+
+        entity.add(colComp);
+        entity.add(b2dbody);
+        entity.add(position);
+        entity.add(texture);
+        entity.add(enemy);
+        entity.add(type);
+
+        engine.addEntity(entity);
+
+        return entity;
     }
 
     public Entity createPlayer(TextureRegion tex, OrthographicCamera cam){
@@ -209,16 +248,16 @@ public class LevelFactory {
 
 
     /**
-     * Creates the Hand entity that steadily moves upwards towards player
+     * Creates the water entity that steadily moves upwards towards player
      * @return
      */
-    public Entity createHandFloor(TextureRegion tex){
+    public Entity createWaterFloor(TextureRegion tex){
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         TransformComponent position = engine.createComponent(TransformComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
-        FloorComponent waterFloor = engine.createComponent(FloorComponent.class);
+        FloorComponent floorFloor = engine.createComponent(FloorComponent.class);
 
         type.type = TypeComponent.ENEMY;
         texture.region = tex;
@@ -228,37 +267,9 @@ public class LevelFactory {
         entity.add(position);
         entity.add(texture);
         entity.add(type);
-        entity.add(waterFloor);
+        entity.add(floorFloor);
 
         b2dbody.body.setUserData(entity);
-
-        engine.addEntity(entity);
-
-        return entity;
-    }
-
-    public Entity createEnemy(TextureRegion tex, float x, float y){
-        Entity entity = engine.createEntity();
-        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        TransformComponent position = engine.createComponent(TransformComponent.class);
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        EnemyComponent enemy = engine.createComponent(EnemyComponent.class);
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
-
-        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, gjBodyFactory.STONE, BodyType.KinematicBody,true);
-        position.position.set(x,y,0);
-        texture.region = tex;
-        enemy.xPosCenter = x;
-        type.type = TypeComponent.ENEMY;
-        b2dbody.body.setUserData(entity);
-
-        entity.add(colComp);
-        entity.add(b2dbody);
-        entity.add(position);
-        entity.add(texture);
-        entity.add(enemy);
-        entity.add(type);
 
         engine.addEntity(entity);
 
@@ -266,6 +277,7 @@ public class LevelFactory {
     }
 
     public Entity createBullet(float x, float y, float xVel, float yVel){
+        System.out.println("Making bullet"+x+":"+y+":"+xVel+":"+yVel);
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         TransformComponent position = engine.createComponent(TransformComponent.class);
@@ -295,6 +307,8 @@ public class LevelFactory {
         return entity;
     }
 
-
-
+    public void removeEntity(Entity ent){
+        engine.removeEntity(ent);
+    }
+}
 }

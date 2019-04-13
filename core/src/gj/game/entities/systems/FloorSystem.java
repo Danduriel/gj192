@@ -25,9 +25,15 @@ public class FloorSystem extends IteratingSystem {
         // get the body component of the wall we're updating
         Body bod = bm.get(entity).body;
 
-        float speed = (currentyLevel / 300);
+        float speed = (currentyLevel / 1000);
 
-        speed = speed>1?1:speed;
+        speed = speed>0.25f?0.25f:speed;
+
+        // make sure water doesn't get too far behind
+        if(bod.getPosition().y < currentyLevel - 50){
+            bod.setTransform(bod.getPosition().x, currentyLevel - 50, bod.getAngle());
+        }
+
 
         bod.setTransform(bod.getPosition().x, bod.getPosition().y+speed, bod.getAngle());
     }

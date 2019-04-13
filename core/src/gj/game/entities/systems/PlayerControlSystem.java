@@ -1,5 +1,6 @@
 package gj.game.entities.systems;
 
+import com.badlogic.gdx.math.Vector3;
 import gj.game.controller.KeyboardController;
 import gj.game.entities.components.B2dBodyComponent;
 import gj.game.entities.components.PlayerComponent;
@@ -79,6 +80,30 @@ public class PlayerControlSystem extends IteratingSystem{
                 (state.get() == StateComponent.STATE_NORMAL || state.get() == StateComponent.STATE_MOVING)){
             b2body.body.applyLinearImpulse(0, 75f, b2body.body.getWorldCenter().x,b2body.body.getWorldCenter().y, true);
             state.set(StateComponent.STATE_JUMPING);
+        }
+
+
+        if(controller.isMouse1Down){ // if mouse button is pressed
+            // user wants to fire
+            if(player.timeSinceLastShot <=0){ // check the player hasn't just shot
+                //player can shoot so do player shoot
+                Vector3 mousePos = new Vector3(controller.mouseLocation.x,controller.mouseLocation.y,0); // get mouse position
+                player.cam.unproject(mousePos); // convert position from screen to box2d world position
+                float speed = 10f;  // set the speed of the bullet
+                float shooterX = b2body.body.getPosition().x; // get player location
+                float shooterY = b2body.body.getPosition().y; // get player location
+                float velx = mousePos.x - shooterX; // get distance from shooter to target on x plain
+                float vely = mousePos.y  - shooterY; // get distance from shooter to target on y plain
+                float length = (float) Math.sqrt(velx * velx + vely * vely); // get distance to target direct
+                if (length != 0) {
+                    velx = velx / length;  // get required x velocity to aim at target
+                    vely = vely / length;  // get required y velocity to aim at target
+                }
+                // create a bullet
+                lvlFactory.createBullet(shooterX, shooterY, velx*speed, vely*speed);
+                //reset timeSinceLastShot
+                player.timeSinceLastShot = player.shootDelay;
+            }
         }
     }
 }

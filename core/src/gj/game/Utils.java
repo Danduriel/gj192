@@ -120,4 +120,10 @@ public class Utils {
         pmap.dispose();
     }
 
+    public static TextureRegion makeTextureRegion(float f, float g, String hex) {
+        int fval = (int)f;
+        int gval = (int)g;
+        return makeTextureRegion(fval,gval,hex);
+    }
+
 }

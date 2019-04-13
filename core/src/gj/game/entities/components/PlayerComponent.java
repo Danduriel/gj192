@@ -9,7 +9,8 @@ public class PlayerComponent implements Component{
     public boolean onPlatform = false;
     public boolean onSpring = false;
     public boolean isDead = false;
-
+    public float shootDelay = 0.5f;
+    public float timeSinceLastShot = 0f;
 
     int edibility;
     int shinyness;

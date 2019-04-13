@@ -6,15 +6,7 @@ import gj.game.Utils;
 import gj.game.LevelFactory;
 import gj.game.controller.KeyboardController;
 import gj.game.entities.components.PlayerComponent;
-import gj.game.entities.systems.AnimationSystem;
-import gj.game.entities.systems.CollisionSystem;
-import gj.game.entities.systems.LevelGenerationSystem;
-import gj.game.entities.systems.PhysicsDebugSystem;
-import gj.game.entities.systems.PhysicsSystem;
-import gj.game.entities.systems.PlayerControlSystem;
-import gj.game.entities.systems.RenderingSystem;
-import gj.game.entities.systems.FloorSystem;
-import gj.game.entities.systems.WallSystem;
+import gj.game.entities.systems.*;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
@@ -59,14 +51,16 @@ public class MainScreen implements Screen{
         sb.setProjectionMatrix(cam.combined);
 
         engine.addSystem(new AnimationSystem());
-        engine.addSystem(new PhysicsSystem(lvlFactory.world));
+        engine.addSystem(new PhysicsSystem(lvlFactory.world, engine));
         engine.addSystem(renderingSystem);
         engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem());
-        engine.addSystem(new PlayerControlSystem(controller));
+        engine.addSystem(new PlayerControlSystem(controller,lvlFactory));
+        engine.addSystem(new EnemySystem());
         player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
         engine.addSystem(new WallSystem(player));
         engine.addSystem(new FloorSystem(player));
+        engine.addSystem(new BulletSystem());
         engine.addSystem(new LevelGenerationSystem(lvlFactory));
 
         int floorWidth = (int) (40*RenderingSystem.PPM);

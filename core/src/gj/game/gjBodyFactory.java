@@ -130,8 +130,9 @@ public class gjBodyFactory {
                 break;
             case STONE:
                 fixtureDef.density = 1f;
-                fixtureDef.friction = 0.01f;
-                fixtureDef.restitution = 0.1f;
+                fixtureDef.friction = 0.5f;
+                fixtureDef.restitution = 0f;
+                break;
             default:
                 fixtureDef.density = 7f;
                 fixtureDef.friction = 0.5f;

@@ -1,4 +1,5 @@
 package gj.game.views;
+
 import gj.game.Orchestrator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 
 public class LoadingScreen implements Screen {
     private Orchestrator parent;
@@ -63,7 +65,7 @@ public class LoadingScreen implements Screen {
         title = atlas.findRegion("staying-alight-logo");
         dash = atlas.findRegion("loading-dash");
         background = atlas.findRegion("flamebackground");
-        //copyright = atlas.findRegion("copyright");
+        copyright = atlas.findRegion("copyright");
         flameAnimation = new Animation(0.07f, atlas.findRegions("flames/flames"), PlayMode.LOOP);
 
     }
@@ -72,7 +74,7 @@ public class LoadingScreen implements Screen {
     public void show() {
 
         titleImage = new Image(title);
-        //copyrightImage = new Image(copyright);
+        copyrightImage = new Image(copyright);
 
         table = new Table();
         table.setFillParent(true);
@@ -95,8 +97,8 @@ public class LoadingScreen implements Screen {
         table.add(titleImage).align(Align.center).pad(10, 0, 0, 0).colspan(10);
         table.row(); // move to next row
         table.add(loadingTable).width(400);
-        //table.row();
-        //table.add(copyrightImage).align(Align.center).pad(200, 0, 0, 0).colspan(10);
+        table.row();
+        table.add(copyrightImage).align(Align.center).pad(200, 0, 0, 0).colspan(10);
 
         stage.addActor(table);
 

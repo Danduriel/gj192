@@ -2,8 +2,10 @@ package gj.game;
 
 
 
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import gj.game.entities.components.*;
 import gj.game.entities.systems.RenderingSystem;
+import gj.game.loader.gjAssetManager;
 import gj.game.simplexnoise.SimplexNoise;
 import gj.game.simplexnoise.OpenSimplexNoise;
 
@@ -22,8 +24,6 @@ public class LevelFactory {
     private gjBodyFactory bodyFactory;
     public World world;
     private PooledEngine engine;
-    private SimplexNoise sim; // a semi-smoothe noise for generating level parts
-    private SimplexNoise simRough; // a more rough noise for generating more randomly placed items
     public int currentLevel = 0;
     private TextureRegion floorTex;
     private TextureRegion enemyTex;
@@ -32,29 +32,27 @@ public class LevelFactory {
     private TextureRegion bulletTex;
     private TextureAtlas atlas;
     private OpenSimplexNoise openSim;
+    private ParticleEffectManager pem;
 
-    public LevelFactory(PooledEngine en, TextureAtlas atlas){
+    public LevelFactory(PooledEngine en, gjAssetManager assMan){
         engine = en;
-        this.atlas = atlas;
-        //floorTex = DFUtils.makeTextureRegion(40*RenderingSystem.PPM, 0.5f*RenderingSystem.PPM, "111111FF");
+        this.atlas = assMan.manager.get("images/game.atlas", TextureAtlas.class);;
         floorTex = atlas.findRegion("reallybadlydrawndirt");
-        //enemyTex = DFUtils.makeTextureRegion(1*RenderingSystem.PPM,1*RenderingSystem.PPM, "331111FF");
         enemyTex = atlas.findRegion("waterdrop");
 
         waterTex  = atlas.findRegion("water");
         bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
-        //platformTex = DFUtils.makeTextureRegion(2*RenderingSystem.PPM, 0.1f*RenderingSystem.PPM, "221122FF");
         platformTex = atlas.findRegion("platform");
         world = new World(new Vector2(0,-10f), true);
         world.setContactListener(new gjContactListener());
         bodyFactory = gjBodyFactory.getInstance(world);
 
-        // create a new SimplexNoise (size,roughness,seed)
-        //sim = new SimplexNoise(1024, 1f, MathUtils.random(3));
-
         openSim = new OpenSimplexNoise(MathUtils.random(2000l));
 
-        //simRough = new SimplexNoise(512, 1, MathUtils.random(3));
+        pem = new ParticleEffectManager();
+        pem.addParticleEffect(ParticleEffectManager.FIRE, assMan.manager.get("particles/fire.pe",ParticleEffect.class),1f/128f);
+        pem.addParticleEffect(ParticleEffectManager.WATER, assMan.manager.get("particles/water.pe",ParticleEffect.class),1f/16f);
+        pem.addParticleEffect(ParticleEffectManager.SMOKE, assMan.manager.get("particles/smoke.pe",ParticleEffect.class),1f/64f);
 
     }
 
@@ -195,7 +193,7 @@ public class LevelFactory {
         return entity;
     }
 
-    public Entity createPlayer(TextureRegion tex, OrthographicCamera cam){
+    public Entity createPlayer(OrthographicCamera cam){
 
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
@@ -212,7 +210,6 @@ public class LevelFactory {
         b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         // set object position (x,y,z) z used to define draw order 0 first drawn
         Animation anim = new Animation(0.1f,atlas.findRegions("flame_a"));
-        Animation derp = new Animation()
         //anim.setPlayMode(Animation.PlayMode.LOOP);
         animCom.animations.put(StateComponent.STATE_NORMAL, anim);
         animCom.animations.put(StateComponent.STATE_MOVING, anim);
@@ -221,7 +218,7 @@ public class LevelFactory {
         animCom.animations.put(StateComponent.STATE_HIT, anim);
 
         position.position.set(10,1,0);
-        texture.region = tex;
+        texture.region = atlas.findRegion("player");
         type.type = TypeComponent.PLAYER;
         stateCom.set(StateComponent.STATE_NORMAL);
         b2dbody.body.setUserData(entity);
@@ -294,6 +291,7 @@ public class LevelFactory {
 
         engine.addEntity(entity);
 
+        makeParticleEffect(ParticleEffectManager.WATER, b2dbody,0,-20);
         return entity;
     }
 
@@ -323,6 +321,9 @@ public class LevelFactory {
         bul.xVel = xVel;
         bul.yVel = yVel;
 
+        //attach party to bullet
+        bul.particleEffect = makeParticleEffect(ParticleEffectManager.FIRE,b2dbody);
+
         entity.add(bul);
         entity.add(colComp);
         entity.add(b2dbody);
@@ -333,7 +334,57 @@ public class LevelFactory {
         entity.add(type);
 
         engine.addEntity(entity);
+
+
+
         return entity;
+    }
+
+    /**
+     * Make particle effect at xy
+     * @param x
+     * @param y
+     * @return the Particle Effect Entity
+     */
+    public Entity makeParticleEffect(int type, float x, float y){
+        Entity entPE = engine.createEntity();
+        ParticleEffectComponent pec = engine.createComponent(ParticleEffectComponent.class);
+        pec.particleEffect = pem.getPooledParticleEffect(type);
+        pec.particleEffect.setPosition(x, y);
+        entPE.add(pec);
+        engine.addEntity(entPE);
+        return entPE;
+    }
+
+    /** Attache particle effect to body from body component
+     * @param type the type of particle effect to show
+     * @param b2dbody the bodycomponent with the body to attach to
+     * @return the Particle Effect Entity
+     */
+    public Entity makeParticleEffect(int type, B2dBodyComponent b2dbody){
+        return makeParticleEffect(type,b2dbody,0,0);
+    }
+
+    /**
+     * Attache particle effect to body from body component with offsets
+     * @param type the type of particle effect to show
+     * @param b2dbody the bodycomponent with the body to attach to
+     * @param xo x offset
+     * @param yo y offset
+     * @return the Particle Effect Entity
+     */
+    public Entity makeParticleEffect(int type, B2dBodyComponent b2dbody, float xo, float yo){
+        Entity entPE = engine.createEntity();
+        ParticleEffectComponent pec = engine.createComponent(ParticleEffectComponent.class);
+        pec.particleEffect = pem.getPooledParticleEffect(type);
+        pec.particleEffect.setPosition(b2dbody.body.getPosition().x, b2dbody.body.getPosition().y);
+        pec.particleEffect.getEmitters().first().setAttached(true); //manually attach for testing
+        pec.isattached = true;
+        pec.particleEffect.getEmitters().first().setContinuous(true);
+        pec.attachedBody = b2dbody.body;
+        entPE.add(pec);
+        engine.addEntity(entPE);
+        return entPE;
     }
 
     public void removeEntity(Entity ent){

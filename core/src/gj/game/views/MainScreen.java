@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 public class MainScreen implements Screen {
     private Orchestrator parent;
     private OrthographicCamera cam;
@@ -28,7 +27,6 @@ public class MainScreen implements Screen {
 
     private Sound ping;
     private Sound boing;
-    private TextureAtlas atlas;
     private Entity player;
 
 
@@ -39,27 +37,30 @@ public class MainScreen implements Screen {
         parent = Orchestrator;
         parent.assMan.queueAddSounds();
         parent.assMan.manager.finishLoading();
-        atlas = parent.assMan.manager.get("images/game.atlas", TextureAtlas.class);
         ping = parent.assMan.manager.get("sounds/ping.wav",Sound.class);
         boing = parent.assMan.manager.get("sounds/boing.wav",Sound.class);
         controller = new KeyboardController();
         engine = new PooledEngine();
-        lvlFactory = new LevelFactory(engine,atlas);
+        // next guide - changed this to atlas
+        lvlFactory = new LevelFactory(engine,parent.assMan);
 
 
         sb = new SpriteBatch();
         RenderingSystem renderingSystem = new RenderingSystem(sb);
         cam = renderingSystem.getCamera();
+        ParticleEffectSystem particleSystem = new ParticleEffectSystem(sb,cam);
         sb.setProjectionMatrix(cam.combined);
 
         engine.addSystem(new AnimationSystem());
-        engine.addSystem(new PhysicsSystem(lvlFactory.world, engine));
+        engine.addSystem(new PhysicsSystem(lvlFactory.world));
         engine.addSystem(renderingSystem);
+        // not a fan of splitting batch into rendering and particles but I like the separation of the systems
+        engine.addSystem(particleSystem); // particle get drawns on top so should be placed after normal rendering
         engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem());
         engine.addSystem(new PlayerControlSystem(controller,lvlFactory));
         engine.addSystem(new EnemySystem());
-        player = lvlFactory.createPlayer(atlas.findRegion("player"),cam);
+        player = lvlFactory.createPlayer(cam);
         engine.addSystem(new WallSystem(player));
         engine.addSystem(new FloorSystem(player));
         engine.addSystem(new BulletSystem(player));
@@ -72,7 +73,7 @@ public class MainScreen implements Screen {
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
         TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
-        lvlFactory.createWalls(wallRegion);
+        lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
     }
 
 

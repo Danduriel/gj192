@@ -16,21 +16,19 @@ import com.badlogic.gdx.utils.Array;
 
 public class PhysicsSystem extends IteratingSystem {
 
-    private static final float MAX_STEP_TIME = 1/45f;
+    private static final float MAX_STEP_TIME = 1/60f;
     private static float accumulator = 0f;
 
     private World world;
-    private Engine engine;
     private Array<Entity> bodiesQueue;
 
     private ComponentMapper<B2dBodyComponent> bm = ComponentMapper.getFor(B2dBodyComponent.class);
     private ComponentMapper<TransformComponent> tm = ComponentMapper.getFor(TransformComponent.class);
 
     @SuppressWarnings("unchecked")
-    public PhysicsSystem(World world, Engine eng) {
+    public PhysicsSystem(World world) {
         super(Family.all(B2dBodyComponent.class, TransformComponent.class).get());
         this.world = world;
-        this.engine = eng;
         this.bodiesQueue = new Array<Entity>();
     }
 
@@ -55,7 +53,7 @@ public class PhysicsSystem extends IteratingSystem {
                 if(bodyComp.isDead){
                     System.out.println("Removing a body and entity");
                     world.destroyBody(bodyComp.body);
-                    engine.removeEntity(entity);
+                    getEngine().removeEntity(entity);
                 }
 
             }

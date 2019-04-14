@@ -3,13 +3,13 @@ package gj.game.loader;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader.ParticleEffectParameter;
 
 public class gjAssetManager {
-
 
     public final AssetManager manager = new AssetManager();
 
@@ -27,12 +27,21 @@ public class gjAssetManager {
     public final String gameImages = "images/game.atlas";
     public final String loadingImages = "images/loading.atlas";
 
+    // Particle Effects
+    public final String smokeEffect = "particles/smoke.pe";
+    public final String waterEffect = "particles/water.pe";
+    public final String fireEffect = "particles/fire.pe";
+
     public void queueAddFonts(){
 
     }
 
     public void queueAddParticleEffects(){
-
+        ParticleEffectParameter pep = new ParticleEffectParameter();
+        pep.atlasFile = "images/game.atlas";
+        manager.load(smokeEffect, ParticleEffect.class, pep);
+        manager.load(waterEffect, ParticleEffect.class, pep);
+        manager.load(fireEffect, ParticleEffect.class, pep);
     }
 
     public void queueAddImages(){

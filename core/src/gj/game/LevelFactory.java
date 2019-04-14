@@ -185,7 +185,7 @@ public class LevelFactory {
         texture.region = floorTex;
         texture.offsetY = -0.4f;
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(23, -16, 120, 32, gjBodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(40, -5, 140, 31, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -329,7 +329,7 @@ public class LevelFactory {
         type.type = TypeComponent.ENEMY;
         texture.region = handTex;
         texture.offsetY = 1;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(23,-35,120,22, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(42,-35,120,22, gjBodyFactory.STONE, BodyType.KinematicBody,true);
         position.position.set(20,-15,0);
         entity.add(b2dbody);
         entity.add(position);
@@ -516,7 +516,7 @@ public class LevelFactory {
         position.position.set(46,32,-10);
         texture.region = newAtlas.findRegion("background");
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(23, 17, 100, 100, gjBodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(40, 17, 100, 100, gjBodyFactory.STONE, BodyType.StaticBody);
 
         bodyFactory.makeAllFixturesSensors(b2dbody.body);
 

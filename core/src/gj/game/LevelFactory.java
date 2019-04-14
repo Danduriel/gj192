@@ -185,7 +185,7 @@ public class LevelFactory {
         texture.region = floorTex;
         texture.offsetY = -0.4f;
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(40, -5, 140, 31, gjBodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(40, -16, 140, 40, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);

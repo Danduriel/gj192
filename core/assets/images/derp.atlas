@@ -1,0 +1,89 @@
+
+derp.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+hands
+  rotate: false
+  xy: 1, 121
+  size: 700, 375
+  orig: 700, 375
+  offset: 0, 0
+  index: -1
+mrclean_klein
+  rotate: false
+  xy: 1, 19
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+tomtomato_klein
+  rotate: false
+  xy: 703, 396
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+sssalat_klein
+  rotate: false
+  xy: 103, 19
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+KlausKleber_klein
+  rotate: false
+  xy: 703, 294
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+caution_klein
+  rotate: false
+  xy: 805, 396
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+burger2_klein
+  rotate: false
+  xy: 205, 19
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+janine_klein
+  rotate: false
+  xy: 703, 192
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+burger1_klein
+  rotate: false
+  xy: 805, 294
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+gurke_klein
+  rotate: false
+  xy: 907, 396
+  size: 79, 100
+  orig: 79, 100
+  offset: 0, 0
+  index: -1
+platform
+  rotate: false
+  xy: 1, 1
+  size: 48, 16
+  orig: 48, 16
+  offset: 0, 0
+  index: -1
+munition
+  rotate: false
+  xy: 307, 99
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1

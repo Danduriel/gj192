@@ -67,4 +67,3 @@ public class gjAssetManager {
         manager.load(pingSound, Sound.class);
     }
 }
-}

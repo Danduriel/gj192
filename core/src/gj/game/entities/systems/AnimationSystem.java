@@ -1,5 +1,6 @@
 package gj.game.entities.systems;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import gj.game.entities.components.AnimationComponent;
 import gj.game.entities.components.StateComponent;
 import gj.game.entities.components.TextureComponent;
@@ -34,7 +35,7 @@ public class AnimationSystem extends IteratingSystem {
 
         if(ani.animations.containsKey(state.get())){
             TextureComponent tex = tm.get(entity);
-            tex.region = ani.animations.get(state.get()).getKeyFrame(state.time, state.isLooping);
+            tex.region = (TextureRegion) ani.animations.get(state.get()).getKeyFrame(state.time, state.isLooping);
         }
 
         state.time += deltaTime;

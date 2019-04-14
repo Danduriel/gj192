@@ -29,6 +29,9 @@ public class Orchestrator extends Game {
 	public final static int ENDGAME = 3;
 
 	public int lastScore = 0;
+	public int edibility = 0;
+	public int toxiticity = 0;
+	public int shinyness = 0;
 
 	@Override
 	public void create () {

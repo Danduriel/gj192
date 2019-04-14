@@ -9,7 +9,7 @@ public class PlayerComponent implements Component, Poolable{
     public boolean onPlatform = false;
     public boolean onSpring = false;
     public boolean isDead = false;
-    public float shootDelay = 0.5f;
+    public float shootDelay = 0.4f;
     public float timeSinceLastShot = 0f;
     @Override
     public void reset() {
@@ -17,7 +17,7 @@ public class PlayerComponent implements Component, Poolable{
         onPlatform = false;
         onSpring = false;
         isDead = false;
-        shootDelay = 0.5f;
+        shootDelay = 0.4f;
         timeSinceLastShot = 0f;
     }
 }

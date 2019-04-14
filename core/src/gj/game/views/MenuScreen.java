@@ -41,7 +41,7 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         // debug to skip menu
-        //DFUtils.log("To the game");
+        //Utils.log("To the game");
         //parent.changeScreen(Box2DTutorial.APPLICATION);
 
 

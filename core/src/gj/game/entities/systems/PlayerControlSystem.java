@@ -60,14 +60,6 @@ public class PlayerControlSystem extends IteratingSystem{
                 System.out.println("setting to moving");
             }
         }
-        // old function for testing platform ghosting
-        //if(b2body.body.getLinearVelocity().y < 0 && state.get() == StateComponent.STATE_FALLING){
-        // player is actually falling. check if they are on platform
-        //if(player.onPlatform){
-        //overwrite old y value with 0 t stop falling but keep x vel
-        //b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0f);
-        //}
-        //}
 
         // make player teleport higher
         if(player.onSpring){
@@ -75,7 +67,8 @@ public class PlayerControlSystem extends IteratingSystem{
             //add particle effect at feet
             lvlFactory.makeParticleEffect(ParticleEffectManager.SMOKE, b2body.body.getPosition().x, b2body.body.getPosition().y);
             // move player
-            b2body.body.setTransform(b2body.body.getPosition().x, b2body.body.getPosition().y+ 10, b2body.body.getAngle());
+            //ToDo Randomize X Movement
+            b2body.body.setTransform(b2body.body.getPosition().x+5, b2body.body.getPosition().y+ 10, b2body.body.getAngle());
             //state.set(StateComponent.STATE_JUMPING);
             player.onSpring = false;
         }

@@ -28,10 +28,11 @@ public class LevelFactory {
     public int currentLevel = 0;
     private TextureRegion floorTex;
     private TextureRegion enemyTex;
-    private TextureRegion waterTex;
+    private TextureRegion handTex;
     private TextureRegion platformTex;
     private TextureRegion bulletTex;
     private TextureAtlas atlas;
+    private TextureAtlas newAtlas;
     private OpenSimplexNoise openSim;
     private ParticleEffectManager pem;
     public Entity player;
@@ -40,14 +41,16 @@ public class LevelFactory {
 
     public LevelFactory(PooledEngine en, gjAssetManager assMan){
         engine = en;
-        this.atlas = assMan.manager.get("images/game.atlas", TextureAtlas.class);;
+        this.atlas = assMan.manager.get("images/game.atlas", TextureAtlas.class);
+        this.newAtlas = assMan.manager.get("images/derp.atlas", TextureAtlas.class);
         floorTex = atlas.findRegion("reallybadlydrawndirt");
-        enemyTex = atlas.findRegion("waterdrop");
+        enemyTex = newAtlas.findRegion("caution_klein");
         this.assman = assMan;
 
-        waterTex  = atlas.findRegion("water");
+        handTex = newAtlas.findRegion("hands");
         bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
-        platformTex = atlas.findRegion("platform");
+
+        platformTex = newAtlas.findRegion("platform");
         world = new World(new Vector2(0,-10f), true);
         world.setContactListener(new gjContactListener());
         bodyFactory = gjBodyFactory.getInstance(world);
@@ -136,9 +139,11 @@ public class LevelFactory {
         //make it a sensor so not to impede movement
         bodyFactory.makeAllFixturesSensors(b2dbody.body);
 
+
         // give it a texture..todo get another texture and anim for springy action
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         texture.region = platformTex;
+
 
         TransformComponent trans = engine.createComponent(TransformComponent.class);
         trans.position.set(x, y, 0);
@@ -146,6 +151,7 @@ public class LevelFactory {
 
         TypeComponent type = engine.createComponent(TypeComponent.class);
         type.type = TypeComponent.SPRING;
+
 
         AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
         StateComponent stateCom = engine.createComponent(StateComponent.class);
@@ -177,7 +183,7 @@ public class LevelFactory {
         texture.region = floorTex;
         texture.offsetY = -0.4f;
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 46, 32, gjBodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 60, 32, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -234,6 +240,8 @@ public class LevelFactory {
         b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         b2dbody.body.setSleepingAllowed(false); // don't allow unit to sleep or it wil sleep through events if stationary too long
         // set object position (x,y,z) z used to define draw order 0 first drawn
+
+        /**  // Test without Animation, flame not wanted
         Animation anim = new Animation(0.1f,atlas.findRegions("flame_a"));
         //anim.setPlayMode(Animation.PlayMode.LOOP);
         animCom.animations.put(StateComponent.STATE_NORMAL, anim);
@@ -241,9 +249,10 @@ public class LevelFactory {
         animCom.animations.put(StateComponent.STATE_JUMPING, anim);
         animCom.animations.put(StateComponent.STATE_FALLING, anim);
         animCom.animations.put(StateComponent.STATE_HIT, anim);
-
+        **/
         position.position.set(10,1,0);
-        texture.region = atlas.findRegion("player");
+        //texture.region = atlas.findRegion("player");
+        texture.region = newAtlas.findRegion("burger1_klein");
         texture.offsetY = 0.5f;
         type.type = TypeComponent.PLAYER;
         stateCom.set(StateComponent.STATE_NORMAL);
@@ -278,7 +287,7 @@ public class LevelFactory {
             WallComponent wallComp = engine.createComponent(WallComponent.class);
 
             //make wall
-            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*40),30,1,60, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*50),10,1,40, gjBodyFactory.STONE, BodyType.KinematicBody,true);
             position.position.set(0+(i*40), 30, 0);
             texture.region = tex;
             type.type = TypeComponent.SCENERY;
@@ -309,16 +318,16 @@ public class LevelFactory {
         AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
         StateComponent stateCom = engine.createComponent(StateComponent.class);
 
-
+/** Old Water animation not needed anymore
         Animation anim = new Animation(0.3f,atlas.findRegions("water"));
         anim.setPlayMode(Animation.PlayMode.LOOP);
         animCom.animations.put(0, anim);
-
+**/
 
         type.type = TypeComponent.ENEMY;
-        texture.region = waterTex;
+        texture.region = handTex;
         texture.offsetY = 1;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(20,-40,40,44, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(23,-35,120,22, gjBodyFactory.STONE, BodyType.KinematicBody,true);
         position.position.set(20,-15,0);
         entity.add(b2dbody);
         entity.add(position);
@@ -454,7 +463,7 @@ public class LevelFactory {
         b2dbody.body.setLinearDamping(0.3f); // setting linear dampening so the enemy slows down in our box2d world(or it can float on forever)
 
         position.position.set(x,y,0);
-        texture.region = atlas.findRegion("enemy");
+        texture.region = newAtlas.findRegion("janine_klein");
         type.type = TypeComponent.ENEMY;
         stateCom.set(StateComponent.STATE_NORMAL);
         b2dbody.body.setUserData(entity);

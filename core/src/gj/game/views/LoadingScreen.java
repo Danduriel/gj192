@@ -179,7 +179,6 @@ public class LoadingScreen implements Screen {
         private float stateTime = 0f;
         private TextureRegion currentFrame;
 
-
         public LoadingBarPart(AtlasRegion ar, Animation an) {
             super();
             image = ar;
@@ -187,7 +186,6 @@ public class LoadingScreen implements Screen {
             this.setWidth(30);
             this.setHeight(25);
             this.setVisible(false);
-            //this.debug();
         }
 
         @Override

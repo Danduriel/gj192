@@ -25,6 +25,8 @@ public class gjAssetManager {
     // Textures
     public final String gameImages = "images/game.atlas";
     public final String loadingImages = "images/loading.atlas";
+    public final String newGameImages = "images/derp.atlas";
+    public final String endImages = "images/ends.atlas";
 
     // Particle Effects
     public final String smokeEffect = "particles/smoke.pe";
@@ -45,6 +47,8 @@ public class gjAssetManager {
 
     public void queueAddImages(){
         manager.load(gameImages, TextureAtlas.class);
+        manager.load(newGameImages, TextureAtlas.class);
+        manager.load(endImages, TextureAtlas.class);
     }
 
     // a small set of images used by the loading screen

@@ -56,7 +56,6 @@ public class MainScreen implements Screen {
         //boing = parent.assMan.manager.get("sounds/boing.wav",Sound.class);
         controller = new KeyboardController();
         engine = new PooledEngine();
-        // next guide - changed this to atlas
         lvlFactory = new LevelFactory(engine,parent.assMan);
 
 
@@ -85,14 +84,14 @@ public class MainScreen implements Screen {
 
         lvlFactory.createFloor();
         lvlFactory.createWaterFloor();
-        //lvlFactory.createBackground();
+        lvlFactory.createBackground();
         //lvlFactory.createSeeker(Mapper.sCom.get(player),20,15);
 
 
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
         TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
-        lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
+        lvlFactory.createWalls(wallRegion); //TODO make image
     }
 
     // reset world or start world again
@@ -108,7 +107,7 @@ public class MainScreen implements Screen {
         int wallWidth = (int) (1*RenderingSystem.PPM);
         int wallHeight = (int) (60*RenderingSystem.PPM);
         TextureRegion wallRegion = Utils.makeTextureRegion(wallWidth, wallHeight, "222222FF");
-        lvlFactory.createWalls(wallRegion); //TODO make some damn images for this stuff
+        lvlFactory.createWalls(wallRegion); //TODO make images
 
         // reset controller controls (fixes bug where controller stuck on directrion if died in that position)
         controller.left = false;
@@ -141,6 +140,11 @@ public class MainScreen implements Screen {
             parent.lastScore = (int) pc.cam.position.y;
             parent.changeScreen(Orchestrator.ENDGAME);
         }
+        /**
+        if((int) pc.cam.position.y > 100){
+            player.getComponent(texture.region = texture.region = newAtlas.findRegion("burger2_klein");
+                    //texture.region = newAtlas.findRegion("burger2_klein");
+        }**/
 
     }
 

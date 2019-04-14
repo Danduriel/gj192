@@ -27,6 +27,7 @@ public class EndScreen implements Screen {
     private Skin skin;
     private Stage stage;
     private TextureAtlas atlas;
+    private TextureAtlas newAtlas;
     private AtlasRegion background;
 
     public EndScreen(Orchestrator Orchestrator){
@@ -38,7 +39,8 @@ public class EndScreen implements Screen {
         // get skin
         skin = parent.assMan.manager.get("skin/glassy-ui.json");
         atlas = parent.assMan.manager.get("images/loading.atlas");
-        background = atlas.findRegion("flamebackground");
+        newAtlas = parent.assMan.manager.get("images/ends.atlas");
+        background = newAtlas.findRegion("gameover_final");
 
         // create button to go back to manu
         TextButton menuButton = new TextButton("Back", skin, "small");
@@ -63,7 +65,7 @@ public class EndScreen implements Screen {
         table.setBackground(new TiledDrawable(background));
 
         //create a Labels showing the score and some credits
-        Label labelScore = new Label("You score was "+parent.lastScore+" Meters", skin);
+        Label labelScore = new Label("Your score was "+parent.lastScore+" Meters", skin);
         Label labelCredits = new Label("Credits:", skin);
         Label labelCredits1 = new Label("Game Design by", skin);
         Label labelCredits2 = new Label("Alex", skin);

@@ -65,10 +65,10 @@ public class EndScreen implements Screen {
         //create a Labels showing the score and some credits
         Label labelScore = new Label("You score was "+parent.lastScore+" Meters", skin);
         Label labelCredits = new Label("Credits:", skin);
-        Label labelCredits1 = new Label("Game Design by", skin);
+        Label labelCredits1 = new Label("Game Design by ", skin);
         Label labelCredits2 = new Label("Dino", skin);
-        Label labelCredits3 = new Label("Art Design by", skin);
-        Label labelCredits4 = new Label("Einhörnchen", skin);
+        Label labelCredits3 = new Label("Art Design by ", skin);
+        Label labelCredits4 = new Label("Einhorn", skin);
 
         // add items to table
         table.add(labelScore).colspan(2);

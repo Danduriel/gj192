@@ -40,7 +40,14 @@ public class EndScreen implements Screen {
         skin = parent.assMan.manager.get("skin/glassy-ui.json");
         atlas = parent.assMan.manager.get("images/loading.atlas");
         newAtlas = parent.assMan.manager.get("images/ends.atlas");
-        background = newAtlas.findRegion("gameover_final");
+
+        if(parent.lastScore > 50){
+            background = newAtlas.findRegion("youwin_final");
+        }
+        else{
+            background = newAtlas.findRegion("gameover_final");
+        }
+
 
         // create button to go back to manu
         TextButton menuButton = new TextButton("Back", skin, "small");
@@ -61,9 +68,11 @@ public class EndScreen implements Screen {
         // create table to layout iutems we will add
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        table.setDebug(false);
         table.setBackground(new TiledDrawable(background));
 
+
+        /**
         //create a Labels showing the score and some credits
         Label labelScore = new Label("Your score was "+parent.lastScore+" Meters", skin);
         Label labelCredits = new Label("Credits:", skin);
@@ -82,7 +91,9 @@ public class EndScreen implements Screen {
         table.row().padTop(10);
         table.add(labelCredits3).uniformX().align(Align.left);
         table.add(labelCredits4).uniformX().align(Align.left);
-        table.row().padTop(50);
+
+         **/
+        table.row().padTop(450).padLeft(450);
         table.add(menuButton).colspan(2);
 
         //add table to stage
@@ -95,6 +106,9 @@ public class EndScreen implements Screen {
         // clear the screen ready for next set of images to be drawn
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if(parent.lastScore > 50){
+            background = newAtlas.findRegion("youwin_final");
+        }
 
         stage.act();
         stage.draw();

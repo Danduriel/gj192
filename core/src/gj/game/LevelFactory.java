@@ -43,11 +43,13 @@ public class LevelFactory {
         engine = en;
         this.atlas = assMan.manager.get("images/game.atlas", TextureAtlas.class);
         this.newAtlas = assMan.manager.get("images/derp.atlas", TextureAtlas.class);
-        floorTex = atlas.findRegion("reallybadlydrawndirt");
+//        floorTex = atlas.findRegion("reallybadlydrawndirt");
+        floorTex = newAtlas.findRegion("boden");
+
         enemyTex = newAtlas.findRegion("caution_klein");
         this.assman = assMan;
 
-        handTex = newAtlas.findRegion("hands");
+        handTex = newAtlas.findRegion("hands_final");
         bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
 
         platformTex = newAtlas.findRegion("platform");
@@ -83,9 +85,9 @@ public class LevelFactory {
     }
 
     private void generateSingleColumn(int i){
-        int offset = 10 * i;
+        int offset = 15 * i;
         int range = 15;
-        if(genNForL(i,currentLevel) > -0.5f){
+        if(genNForL(i,currentLevel) > -0.6f){
             createPlatform(genNForL(i * 100,currentLevel) * range + offset ,currentLevel * 2);
             if(genNForL(i * 200,currentLevel) > 0.3f){
                 // add bouncy platform
@@ -93,14 +95,14 @@ public class LevelFactory {
             }
             // only make enemies above level 7 (stops insta deaths)
             if(currentLevel > 7){
-                if(genNForL(i * 300,currentLevel) > 0.2f){
+                if(genNForL(i * 300,currentLevel) > 0.3f){
                     // add an enemy
                     createEnemy(enemyTex,genNForL(i * 100,currentLevel) * range + offset,currentLevel * 2 + 1);
                 }
             }
             //only make cloud enemies above level 10 (stops insta deaths)
             if(currentLevel > 0){
-                if(genNForL(i * 400,currentLevel) > 0.3f){
+                if(genNForL(i * 400,currentLevel) > 0.4f){
                     // add a cloud enemy
                     createSeeker(genNForL(i * 100,currentLevel) * range + offset,currentLevel * 2 + 1);
                 }
@@ -183,7 +185,7 @@ public class LevelFactory {
         texture.region = floorTex;
         texture.offsetY = -0.4f;
         type.type = TypeComponent.SCENERY;
-        b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 60, 32, gjBodyFactory.STONE, BodyType.StaticBody);
+        b2dbody.body = bodyFactory.makeBoxPolyBody(23, -16, 120, 32, gjBodyFactory.STONE, BodyType.StaticBody);
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -287,7 +289,7 @@ public class LevelFactory {
             WallComponent wallComp = engine.createComponent(WallComponent.class);
 
             //make wall
-            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*50),10,1,40, gjBodyFactory.STONE, BodyType.KinematicBody,true);
+            b2dbody.body = b2dbody.body = bodyFactory.makeBoxPolyBody(0+(i*80),10,1,40, gjBodyFactory.STONE, BodyType.KinematicBody,true);
             position.position.set(0+(i*40), 30, 0);
             texture.region = tex;
             type.type = TypeComponent.SCENERY;
@@ -512,7 +514,7 @@ public class LevelFactory {
 
 
         position.position.set(46,32,-10);
-        texture.region = atlas.findRegion("skybg");
+        texture.region = newAtlas.findRegion("background");
         type.type = TypeComponent.SCENERY;
         b2dbody.body = bodyFactory.makeBoxPolyBody(23, 17, 100, 100, gjBodyFactory.STONE, BodyType.StaticBody);
 

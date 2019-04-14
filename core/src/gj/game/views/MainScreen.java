@@ -6,6 +6,7 @@ import gj.game.LevelFactory;
 import gj.game.controller.KeyboardController;
 import gj.game.entities.components.Mapper;
 import gj.game.entities.components.PlayerComponent;
+import gj.game.entities.components.TextureComponent;
 import gj.game.entities.systems.AnimationSystem;
 import gj.game.entities.systems.BulletSystem;
 import gj.game.entities.systems.CollisionSystem;
@@ -140,11 +141,6 @@ public class MainScreen implements Screen {
             parent.lastScore = (int) pc.cam.position.y;
             parent.changeScreen(Orchestrator.ENDGAME);
         }
-        /**
-        if((int) pc.cam.position.y > 100){
-            player.getComponent(texture.region = texture.region = newAtlas.findRegion("burger2_klein");
-                    //texture.region = newAtlas.findRegion("burger2_klein");
-        }**/
 
     }
 

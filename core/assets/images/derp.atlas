@@ -3,72 +3,86 @@ derp.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-hands
+background
   rotate: false
-  xy: 1, 121
-  size: 700, 375
-  orig: 700, 375
+  xy: 1, 911
+  size: 1280, 1024
+  orig: 1280, 1024
+  offset: 0, 0
+  index: -1
+hands_final
+  rotate: false
+  xy: 1, 223
+  size: 1280, 686
+  orig: 1280, 686
+  offset: 0, 0
+  index: -1
+boden
+  rotate: false
+  xy: 1283, 1342
+  size: 1280, 593
+  orig: 1280, 593
   offset: 0, 0
   index: -1
 mrclean_klein
   rotate: false
-  xy: 1, 19
+  xy: 1, 121
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 tomtomato_klein
   rotate: false
-  xy: 703, 396
+  xy: 1283, 1240
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 sssalat_klein
   rotate: false
-  xy: 103, 19
+  xy: 2565, 1835
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 KlausKleber_klein
   rotate: false
-  xy: 703, 294
+  xy: 1, 19
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 caution_klein
   rotate: false
-  xy: 805, 396
+  xy: 103, 121
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 burger2_klein
   rotate: false
-  xy: 205, 19
+  xy: 1283, 1138
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 janine_klein
   rotate: false
-  xy: 703, 192
+  xy: 1385, 1240
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 burger1_klein
   rotate: false
-  xy: 805, 294
+  xy: 2565, 1733
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 gurke_klein
   rotate: false
-  xy: 907, 396
+  xy: 2667, 1835
   size: 79, 100
   orig: 79, 100
   offset: 0, 0
@@ -82,7 +96,7 @@ platform
   index: -1
 munition
   rotate: false
-  xy: 307, 99
+  xy: 103, 99
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

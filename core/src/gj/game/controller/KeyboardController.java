@@ -1,12 +1,10 @@
 package gj.game.controller;
 
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 
-public class KeyboardController implements  InputProcessor{
-
+public class KeyboardController  implements InputProcessor {
     public boolean left,right,up,down;
     public boolean isMouse1Down, isMouse2Down,isMouse3Down;
     public boolean isDragged;
@@ -60,7 +58,6 @@ public class KeyboardController implements  InputProcessor{
     }
     @Override
     public boolean keyTyped(char character) {
-        System.out.println(character);
         return false;
     }
     @Override

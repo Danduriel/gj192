@@ -1,16 +1,20 @@
 package gj.game.views;
 
-        import com.badlogic.gdx.Gdx;
-        import com.badlogic.gdx.Screen;
-        import com.badlogic.gdx.graphics.GL20;
-        import com.badlogic.gdx.scenes.scene2d.Actor;
-        import com.badlogic.gdx.scenes.scene2d.Stage;
-        import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-        import com.badlogic.gdx.scenes.scene2d.ui.Table;
-        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-        import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-        import com.badlogic.gdx.utils.viewport.ScreenViewport;
-        import gj.game.Orchestrator;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import gj.game.Orchestrator;
+
 
 public class MenuScreen implements Screen {
 
@@ -18,6 +22,8 @@ public class MenuScreen implements Screen {
     private Orchestrator parent;
     private Stage stage;
     private Skin skin;
+    private TextureAtlas atlas;
+    private AtlasRegion background;
 
     public MenuScreen(Orchestrator Orchestrator){
         parent = Orchestrator;
@@ -27,17 +33,26 @@ public class MenuScreen implements Screen {
         parent.assMan.queueAddSkin();
         parent.assMan.manager.finishLoading();
         skin = parent.assMan.manager.get("skin/glassy-ui.json");
+        atlas = parent.assMan.manager.get("images/loading.atlas");
+        background = atlas.findRegion("flamebackground");
 
     }
 
     @Override
     public void show() {
+        // debug to skip menu
+        //DFUtils.log("To the game");
+        //parent.changeScreen(Box2DTutorial.APPLICATION);
+
+
         Gdx.input.setInputProcessor(stage);
         // Create a table that fills the screen. Everything else will go inside this table.
         Table table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
         stage.addActor(table);
+
+        table.setBackground(new TiledDrawable(background));
 
 
         //create buttons
@@ -85,31 +100,25 @@ public class MenuScreen implements Screen {
         // tell our stage to do actions and draw itself
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
+
+        // temp debug stuff(ignore menu  go straight to play..saves time)
+        //parent.changeScreen(Box2DTutorial.APPLICATION);
     }
 
     @Override
     public void resize(int width, int height) {
-        // change the stage's viewport when teh screen size is changed
+        // change the stage's viewport when the screen size is changed
         stage.getViewport().update(width, height, true);
     }
 
     @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-        // TODO Auto-generated method stub
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-        // TODO Auto-generated method stub
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {

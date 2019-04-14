@@ -9,7 +9,7 @@ public class AppPreferences {
     private static final String PREF_MUSIC_ENABLED = "music.enabled";
     private static final String PREF_SOUND_ENABLED = "sound.enabled";
     private static final String PREF_SOUND_VOL = "sound";
-    private static final String PREFS_NAME = "orch";
+    private static final String PREFS_NAME = "b2dtut";
 
     protected Preferences getPrefs() {
         return Gdx.app.getPreferences(PREFS_NAME);

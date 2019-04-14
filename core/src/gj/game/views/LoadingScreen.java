@@ -147,7 +147,7 @@ public class LoadingScreen implements Screen {
         }
 
         stage.act();
-        stage.draw();
+        //stage.draw();
     }
 
     @Override
@@ -204,7 +204,7 @@ public class LoadingScreen implements Screen {
         public void act(float delta) {
             super.act(delta);
             stateTime += delta; // Accumulate elapsed animation time
-            currentFrame = (TextureRegion) flameAnimation.getKeyFrame(stateTime, true);
+            currentFrame = flameAnimation.getKeyFrame(stateTime, true);
         }
 
     }

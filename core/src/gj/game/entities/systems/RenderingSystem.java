@@ -17,7 +17,7 @@ import java.util.Comparator;
 
 public class RenderingSystem extends SortedIteratingSystem {
     // debug stuff
-    private boolean shouldRender = false;
+    private boolean shouldRender = true;
 
     public static final float PPM = 16.0f;
     static final float FRUSTUM_WIDTH = Gdx.graphics.getWidth()/PPM;//37.5f;
@@ -94,7 +94,8 @@ public class RenderingSystem extends SortedIteratingSystem {
                 float originY = height/2f;
 
                 batch.draw(tex.region,
-                        t.position.x - originX, t.position.y - originY,
+                        t.position.x - originX + tex.offsetX,
+                        t.position.y - originY + tex.offsetY,
                         originX, originY,
                         width, height,
                         PixelsToMeters(t.scale.x), PixelsToMeters(t.scale.y),

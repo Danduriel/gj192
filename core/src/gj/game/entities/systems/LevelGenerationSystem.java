@@ -14,6 +14,7 @@ public class LevelGenerationSystem extends IteratingSystem {
     private ComponentMapper<TransformComponent> tm = ComponentMapper.getFor(TransformComponent.class);
     private LevelFactory lf;
 
+    @SuppressWarnings("unchecked")
     public LevelGenerationSystem(LevelFactory lvlFactory){
         super(Family.all(PlayerComponent.class).get());
         lf = lvlFactory;

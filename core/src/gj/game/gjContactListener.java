@@ -10,17 +10,18 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class gjContactListener implements ContactListener {
+//private B2dModel parent;
 
-
-    public gjContactListener(){
+    public gjContactListener(){ //B2dModel parent){
+        //this.parent = parent;
     }
 
     @Override
     public void beginContact(Contact contact) {
-        System.out.println("Contact");
+        //System.out.println("Contact");
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
+        //System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
 
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
@@ -32,6 +33,7 @@ public class gjContactListener implements ContactListener {
             return;
         }
     }
+
     private void entityCollision(Entity ent, Fixture fb) {
         if(fb.getBody().getUserData() instanceof Entity){
             Entity colEnt = (Entity) fb.getBody().getUserData();
@@ -49,7 +51,7 @@ public class gjContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        System.out.println("Contact end");
+        //System.out.println("Contact end");
     }
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {

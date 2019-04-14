@@ -11,11 +11,6 @@ public class PlayerComponent implements Component, Poolable{
     public boolean isDead = false;
     public float shootDelay = 0.5f;
     public float timeSinceLastShot = 0f;
-
-    public int edibility;
-    public int shinyness;
-    public int toxicity;
-
     @Override
     public void reset() {
         cam = null;
@@ -26,5 +21,4 @@ public class PlayerComponent implements Component, Poolable{
         timeSinceLastShot = 0f;
     }
 }
-
 

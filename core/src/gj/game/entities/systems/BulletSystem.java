@@ -1,5 +1,6 @@
 package gj.game.entities.systems;
 
+import gj.game.LevelFactory;
 import gj.game.entities.components.B2dBodyComponent;
 import gj.game.entities.components.BulletComponent;
 import gj.game.entities.components.Mapper;
@@ -9,12 +10,12 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
 public class BulletSystem extends IteratingSystem{
-    private Entity player;
+    private LevelFactory lvlFactory;
 
     @SuppressWarnings("unchecked")
-    public BulletSystem(Entity player){
+    public BulletSystem(LevelFactory lvlFactory){
         super(Family.all(BulletComponent.class).get());
-        this.player = player;
+        this.lvlFactory = lvlFactory;
     }
 
     @Override
@@ -27,7 +28,7 @@ public class BulletSystem extends IteratingSystem{
         b2body.body.setLinearVelocity(bullet.xVel, bullet.yVel);
 
         // get player pos
-        B2dBodyComponent playerBodyComp = Mapper.b2dCom.get(player);
+        B2dBodyComponent playerBodyComp = Mapper.b2dCom.get(lvlFactory.player);
         float px = playerBodyComp.body.getPosition().x;
         float py = playerBodyComp.body.getPosition().y;
 
@@ -35,8 +36,8 @@ public class BulletSystem extends IteratingSystem{
         float bx = b2body.body.getPosition().x;
         float by = b2body.body.getPosition().y;
 
-        // if bullet is 20 units away from player on any axis then it is probably off screen
-        if(bx - px > 20 || by - py > 20){
+        // if bullet is 30 units away from player on any axis then it is probably off screen
+        if(bx - px > 30 || by - py > 30){
             bullet.isDead = true;
         }
 
@@ -46,6 +47,5 @@ public class BulletSystem extends IteratingSystem{
             Mapper.peCom.get(bullet.particleEffect).isDead = true;
             b2body.isDead = true;
         }
-
     }
 }

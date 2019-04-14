@@ -16,4 +16,5 @@ public class Mapper {
     public static final ComponentMapper<WallComponent> wallCom = ComponentMapper.getFor(WallComponent.class);
     public static final ComponentMapper<FloorComponent> waterFlCom = ComponentMapper.getFor(FloorComponent.class);
     public static final ComponentMapper<ParticleEffectComponent> peCom = ComponentMapper.getFor(ParticleEffectComponent.class);
+    public static final ComponentMapper<SteeringComponent> sCom = ComponentMapper.getFor(SteeringComponent.class);
 }

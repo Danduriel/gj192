@@ -35,6 +35,7 @@ public class CollisionSystem  extends IteratingSystem {
 
         // Do Player Collisions
         if(thisType.type == TypeComponent.PLAYER){
+            PlayerComponent pl = pm.get(entity);
             if(collidedEntity != null){
                 TypeComponent type = collidedEntity.getComponent(TypeComponent.class);
                 if(type != null){
@@ -42,7 +43,6 @@ public class CollisionSystem  extends IteratingSystem {
                         case TypeComponent.ENEMY:
                             //do player hit enemy thing
                             System.out.println("player hit enemy");
-                            PlayerComponent pl = pm.get(entity);
                             pl.isDead = true;
                             int score = (int) pl.cam.position.y;
                             System.out.println("Score = "+ score);
@@ -62,6 +62,11 @@ public class CollisionSystem  extends IteratingSystem {
                             System.out.println("player hit other");
                             break;
                         case TypeComponent.BULLET:
+                            // TODO add mask so player can't hit themselves
+                            BulletComponent bullet = Mapper.bulletCom.get(collidedEntity);
+                            if(bullet.owner != BulletComponent.Owner.PLAYER){ // can't shoot own team
+                                pl.isDead = true;
+                            }
                             System.out.println("Player just shot. bullet in player atm");
                             break;
                         default:
@@ -94,10 +99,12 @@ public class CollisionSystem  extends IteratingSystem {
                             break;
                         case TypeComponent.BULLET:
                             EnemyComponent enemy = Mapper.enemyCom.get(entity);
-                            enemy.isDead = true;
                             BulletComponent bullet = Mapper.bulletCom.get(collidedEntity);
-                            bullet.isDead = true;
-                            System.out.println("enemy got shot");
+                            if(bullet.owner != BulletComponent.Owner.ENEMY){ // can't shoot own team
+                                bullet.isDead = true;
+                                enemy.isDead = true;
+                                System.out.println("enemy got shot");
+                            }
                             break;
                         default:
                             System.out.println("No matching type found");

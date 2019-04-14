@@ -23,12 +23,12 @@ public class Orchestrator extends Game {
 	public gjAssetManager assMan = new gjAssetManager();
 	private Music playingSong;
 
-	public int lastScore = 0;
-
 	public final static int MENU = 0;
 	public final static int PREFERENCES = 1;
 	public final static int APPLICATION = 2;
 	public final static int ENDGAME = 3;
+
+	public int lastScore = 0;
 
 	@Override
 	public void create () {
@@ -59,7 +59,12 @@ public class Orchestrator extends Game {
 				break;
 			case APPLICATION:
 				// always make new game screen so game can't start midway
-				mainScreen = new MainScreen(this);
+				if(mainScreen == null){
+					mainScreen = new MainScreen(this);
+				}else{
+					mainScreen.resetWorld();
+				}
+
 				this.setScreen(mainScreen);
 				break;
 			case ENDGAME:

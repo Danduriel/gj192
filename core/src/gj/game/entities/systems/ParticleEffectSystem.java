@@ -36,12 +36,13 @@ public class ParticleEffectSystem extends IteratingSystem{
             batch.begin();
             for (Entity entity : renderQueue) {
                 ParticleEffectComponent pec = Mapper.peCom.get(entity);
-                pec.particleEffect.draw(batch, deltaTime);
+                pec.particleEffect.draw(batch,deltaTime);
             }
             batch.end();
         }
         renderQueue.clear();
     }
+
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {

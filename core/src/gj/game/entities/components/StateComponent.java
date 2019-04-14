@@ -12,7 +12,7 @@ public class StateComponent implements Component, Poolable {
 
     private int state = 0;
     public float time = 0.0f;
-    public boolean isLooping = false;
+    public boolean isLooping = true;
 
     public void set(int newState){
         state = newState;
@@ -27,6 +27,6 @@ public class StateComponent implements Component, Poolable {
     public void reset() {
         state = 0;
         time = 0.0f;
-        isLooping = false;
+        isLooping = true;
     }
 }

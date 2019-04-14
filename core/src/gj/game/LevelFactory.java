@@ -2,23 +2,24 @@ package gj.game;
 
 
 
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import gj.game.ai.SteeringPresets;
 import gj.game.entities.components.*;
-import gj.game.entities.systems.RenderingSystem;
 import gj.game.loader.gjAssetManager;
-import gj.game.simplexnoise.SimplexNoise;
 import gj.game.simplexnoise.OpenSimplexNoise;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class LevelFactory {
     private gjBodyFactory bodyFactory;
@@ -33,12 +34,16 @@ public class LevelFactory {
     private TextureAtlas atlas;
     private OpenSimplexNoise openSim;
     private ParticleEffectManager pem;
+    public Entity player;
+    public gjAssetManager assman;
+
 
     public LevelFactory(PooledEngine en, gjAssetManager assMan){
         engine = en;
         this.atlas = assMan.manager.get("images/game.atlas", TextureAtlas.class);;
         floorTex = atlas.findRegion("reallybadlydrawndirt");
         enemyTex = atlas.findRegion("waterdrop");
+        this.assman = assMan;
 
         waterTex  = atlas.findRegion("water");
         bulletTex = Utils.makeTextureRegion(10,10,"444444FF");
@@ -62,13 +67,8 @@ public class LevelFactory {
      */
     public void generateLevel(int ylevel){
         while(ylevel > currentLevel){
-            int range = 15;
             for(int i = 1; i < 5; i ++){
-                generateSingleColumn(genNForL(i * 1,currentLevel)
-                        ,genNForL(i * 100,currentLevel)
-                        ,genNForL(i * 200,currentLevel)
-                        ,genNForL(i * 300,currentLevel)
-                        ,range,i * 10);
+                generateSingleColumn(i);
             }
             currentLevel++;
         }
@@ -79,16 +79,28 @@ public class LevelFactory {
         return (float)openSim.eval(height, level);
     }
 
-    private void generateSingleColumn(float n1, float n2,float n3,float n4, int range, int offset){
-        if(n1 > -0.5f){
-            createPlatform(n2 * range + offset ,currentLevel * 2);
-            if(n3 > 0.3f){
+    private void generateSingleColumn(int i){
+        int offset = 10 * i;
+        int range = 15;
+        if(genNForL(i,currentLevel) > -0.5f){
+            createPlatform(genNForL(i * 100,currentLevel) * range + offset ,currentLevel * 2);
+            if(genNForL(i * 200,currentLevel) > 0.3f){
                 // add bouncy platform
-                createBouncyPlatform(n2 * range + offset,currentLevel * 2);
+                createBouncyPlatform(genNForL(i * 100,currentLevel) * range + offset,currentLevel * 2);
             }
-            if(n4 > 0.2f){
-                // add an enemy
-                createEnemy(enemyTex,n2 * range + offset,currentLevel * 2 + 1);
+            // only make enemies above level 7 (stops insta deaths)
+            if(currentLevel > 7){
+                if(genNForL(i * 300,currentLevel) > 0.2f){
+                    // add an enemy
+                    createEnemy(enemyTex,genNForL(i * 100,currentLevel) * range + offset,currentLevel * 2 + 1);
+                }
+            }
+            //only make cloud enemies above level 10 (stops insta deaths)
+            if(currentLevel > 0){
+                if(genNForL(i * 400,currentLevel) > 0.3f){
+                    // add a cloud enemy
+                    createSeeker(genNForL(i * 100,currentLevel) * range + offset,currentLevel * 2 + 1);
+                }
             }
         }
     }
@@ -106,7 +118,7 @@ public class LevelFactory {
 
         TypeComponent type = engine.createComponent(TypeComponent.class);
         type.type = TypeComponent.SCENERY;
-
+        entity.add(type);
 
         TransformComponent trans = engine.createComponent(TransformComponent.class);
         trans.position.set(x, y, 0);
@@ -135,7 +147,17 @@ public class LevelFactory {
         TypeComponent type = engine.createComponent(TypeComponent.class);
         type.type = TypeComponent.SPRING;
 
+        AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
+        StateComponent stateCom = engine.createComponent(StateComponent.class);
+        Animation anim = new Animation(0.03f,atlas.findRegions("pad"));
+        anim.setPlayMode(Animation.PlayMode.LOOP);
+        animCom.animations.put(StateComponent.STATE_NORMAL, anim);
+        stateCom.set(StateComponent.STATE_NORMAL);
+
+
         b2dbody.body.setUserData(entity);
+        entity.add(animCom);
+        entity.add(stateCom);
         entity.add(b2dbody);
         entity.add(texture);
         entity.add(type);
@@ -153,6 +175,7 @@ public class LevelFactory {
 
         position.position.set(20,0,0);
         texture.region = floorTex;
+        texture.offsetY = -0.4f;
         type.type = TypeComponent.SCENERY;
         b2dbody.body = bodyFactory.makeBoxPolyBody(20, -16, 46, 32, gjBodyFactory.STONE, BodyType.StaticBody);
 
@@ -204,10 +227,12 @@ public class LevelFactory {
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
         StateComponent stateCom = engine.createComponent(StateComponent.class);
+        SteeringComponent scom = engine.createComponent(SteeringComponent.class);
 
 
         player.cam = cam;
         b2dbody.body = bodyFactory.makeCirclePolyBody(10,1,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
+        b2dbody.body.setSleepingAllowed(false); // don't allow unit to sleep or it wil sleep through events if stationary too long
         // set object position (x,y,z) z used to define draw order 0 first drawn
         Animation anim = new Animation(0.1f,atlas.findRegions("flame_a"));
         //anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -219,9 +244,12 @@ public class LevelFactory {
 
         position.position.set(10,1,0);
         texture.region = atlas.findRegion("player");
+        texture.offsetY = 0.5f;
         type.type = TypeComponent.PLAYER;
         stateCom.set(StateComponent.STATE_NORMAL);
         b2dbody.body.setUserData(entity);
+
+        scom.body = b2dbody.body;
 
         entity.add(b2dbody);
         entity.add(position);
@@ -231,8 +259,10 @@ public class LevelFactory {
         entity.add(colComp);
         entity.add(type);
         entity.add(stateCom);
+        entity.add(scom);
 
         engine.addEntity(entity);
+        this.player = entity;
         return entity;
     }
 
@@ -276,14 +306,25 @@ public class LevelFactory {
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
         FloorComponent waterFloor = engine.createComponent(FloorComponent.class);
+        AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
+        StateComponent stateCom = engine.createComponent(StateComponent.class);
+
+
+        Animation anim = new Animation(0.3f,atlas.findRegions("water"));
+        anim.setPlayMode(Animation.PlayMode.LOOP);
+        animCom.animations.put(0, anim);
+
 
         type.type = TypeComponent.ENEMY;
         texture.region = waterTex;
+        texture.offsetY = 1;
         b2dbody.body = bodyFactory.makeBoxPolyBody(20,-40,40,44, gjBodyFactory.STONE, BodyType.KinematicBody,true);
         position.position.set(20,-15,0);
         entity.add(b2dbody);
         entity.add(position);
         entity.add(texture);
+        entity.add(animCom);
+        entity.add(stateCom);
         entity.add(type);
         entity.add(waterFloor);
 
@@ -291,11 +332,11 @@ public class LevelFactory {
 
         engine.addEntity(entity);
 
-        makeParticleEffect(ParticleEffectManager.WATER, b2dbody,0,-20);
+        makeParticleEffect(ParticleEffectManager.WATER, b2dbody,-19,14);
         return entity;
     }
 
-    public Entity createBullet(float x, float y, float xVel, float yVel){
+    public Entity createBullet(float x, float y, float xVel, float yVel, BulletComponent.Owner own){
         System.out.println("Making bullet"+x+":"+y+":"+xVel+":"+yVel);
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
@@ -306,6 +347,8 @@ public class LevelFactory {
         TypeComponent type = engine.createComponent(TypeComponent.class);
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
         BulletComponent bul = engine.createComponent(BulletComponent.class);
+
+        bul.owner = own;
 
         b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,0.5f, gjBodyFactory.STONE, BodyType.DynamicBody,true);
         b2dbody.body.setBullet(true); // increase physics computation to limit body travelling through other objects
@@ -379,6 +422,8 @@ public class LevelFactory {
         pec.particleEffect = pem.getPooledParticleEffect(type);
         pec.particleEffect.setPosition(b2dbody.body.getPosition().x, b2dbody.body.getPosition().y);
         pec.particleEffect.getEmitters().first().setAttached(true); //manually attach for testing
+        pec.xOffset = xo;
+        pec.yOffset = yo;
         pec.isattached = true;
         pec.particleEffect.getEmitters().first().setContinuous(true);
         pec.attachedBody = b2dbody.body;
@@ -390,4 +435,92 @@ public class LevelFactory {
     public void removeEntity(Entity ent){
         engine.removeEntity(ent);
     }
+
+
+    public Entity createSeeker(float x, float y) {
+        Entity entity = engine.createEntity();
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        TransformComponent position = engine.createComponent(TransformComponent.class);
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        StateComponent stateCom = engine.createComponent(StateComponent.class);
+        EnemyComponent enemy = engine.createComponent(EnemyComponent.class);
+        SteeringComponent scom = engine.createComponent(SteeringComponent.class);
+
+
+        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, gjBodyFactory.STONE, BodyType.DynamicBody,true);
+        b2dbody.body.setGravityScale(0f);  // no gravity for our floating enemy
+        b2dbody.body.setLinearDamping(0.3f); // setting linear dampening so the enemy slows down in our box2d world(or it can float on forever)
+
+        position.position.set(x,y,0);
+        texture.region = atlas.findRegion("enemy");
+        type.type = TypeComponent.ENEMY;
+        stateCom.set(StateComponent.STATE_NORMAL);
+        b2dbody.body.setUserData(entity);
+        // bodyFactory.makeAllFixturesSensors(b2dbody.body); // seeker  should fly about not fall
+        scom.body = b2dbody.body;
+        enemy.enemyType = EnemyComponent.Type.CLOUD;
+
+        // set out steering behaviour
+        scom.steeringBehavior  = SteeringPresets.getWander(scom);
+        //scom.setIndependentFacing(true); // stop clouds rotating
+        scom.currentMode = SteeringComponent.SteeringState.WANDER;
+
+        entity.add(b2dbody);
+        entity.add(position);
+        entity.add(texture);
+        entity.add(colComp);
+        entity.add(type);
+        entity.add(enemy);
+        entity.add(stateCom);
+        entity.add(scom);
+
+        engine.addEntity(entity);
+        return entity;
+
+    }
+
+
+    public void resetWorld() {
+        currentLevel = 0;
+        openSim = new OpenSimplexNoise(MathUtils.random(2000l));
+        Array<Body> bods = new Array<Body>();
+        world.getBodies(bods);
+        for(Body bod:bods){
+            world.destroyBody(bod);
+        }
+    }
+
+    // makes the background item
+    public void createBackground(){
+        Entity entity = engine.createEntity();
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        TransformComponent position = engine.createComponent(TransformComponent.class);
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+
+
+
+        position.position.set(46,32,-10);
+        texture.region = atlas.findRegion("skybg");
+        type.type = TypeComponent.SCENERY;
+        b2dbody.body = bodyFactory.makeBoxPolyBody(23, 17, 100, 100, gjBodyFactory.STONE, BodyType.StaticBody);
+
+        bodyFactory.makeAllFixturesSensors(b2dbody.body);
+
+
+        entity.add(texture);
+        entity.add(position);
+        entity.add(type);
+        entity.add(b2dbody);
+
+        b2dbody.body.setUserData(entity);
+
+        engine.addEntity(entity);
+    }
 }
+
+
+
+

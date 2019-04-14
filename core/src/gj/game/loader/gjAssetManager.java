@@ -10,7 +10,6 @@ import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader.ParticleEffectParameter;
 
 public class gjAssetManager {
-
     public final AssetManager manager = new AssetManager();
 
     // Sounds
@@ -67,6 +66,5 @@ public class gjAssetManager {
         manager.load(boingSound, Sound.class);
         manager.load(pingSound, Sound.class);
     }
-
-
+}
 }

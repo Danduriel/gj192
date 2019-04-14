@@ -3,13 +3,11 @@ package gj.game.entities.systems;
 import gj.game.entities.components.AnimationComponent;
 import gj.game.entities.components.StateComponent;
 import gj.game.entities.components.TextureComponent;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-
 
 public class AnimationSystem extends IteratingSystem {
 
